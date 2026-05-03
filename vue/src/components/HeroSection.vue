@@ -17,15 +17,15 @@ const go = (href) => {
       <div class="circle c3"></div>
     </div>
     <div class="hero-content" :class="{ show: visible }">
-      <div class="tag">👋 欢迎来到我的主页</div>
+      <div class="tag"> 欢迎来到我的主页</div>
       <h1>你好，我是<br><span class="highlight">创意开发者</span></h1>
       <p>热衷于用代码创造优雅的数字体验，专注前端开发与交互设计</p>
       <div class="actions">
-        <el-button type="primary" size="large" round @click="go('#contact')">
-          联系我 <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+        <el-button type="primary" size="large" round @click="go('#projects')">
+          查看作品 <el-icon class="el-icon--right"><ArrowRight /></el-icon>
         </el-button>
-        <el-button size="large" round @click="go('#projects')">
-          查看作品
+        <el-button size="large" round @click="go('#contact')">
+          联系我
         </el-button>
       </div>
     </div>
@@ -35,7 +35,8 @@ const go = (href) => {
 <style scoped>
 .hero {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden; background: linear-gradient(160deg, #f0f5ff 0%, #fff 50%, #e8f0fe 100%);
+  position: relative; overflow: hidden;
+  background: linear-gradient(160deg, #f0f5ff 0%, #fff 50%, #e8f0fe 100%);
 }
 .hero-bg { position: absolute; inset: 0; pointer-events: none; }
 .circle {

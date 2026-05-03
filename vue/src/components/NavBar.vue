@@ -26,7 +26,7 @@ const go = (href) => {
 <template>
   <header class="navbar" :class="{ scrolled }">
     <div class="nav-inner">
-      <a class="logo" @click="go('#hero')">Portfolio</a>
+      <a class="logo" @click="go('#hero')">101dao</a>
       <nav class="nav-links" :class="{ open: mobileMenu }">
         <a v-for="l in links" :key="l.href" @click="go(l.href)">{{ l.label }}</a>
       </nav>

@@ -1,14 +1,21 @@
 <script setup>
-const skills = [
-  { name: 'Vue.js / Nuxt', level: 95, tag: '核心' },
-  { name: 'TypeScript', level: 88, tag: '' },
-  { name: 'React', level: 80, tag: '' },
-  { name: 'CSS / Tailwind', level: 90, tag: '' },
-  { name: 'Node.js', level: 75, tag: '' },
-  { name: 'Git / CI·CD', level: 82, tag: '' }
+const categories = [
+  {
+    title: '基础',
+    icon: 'Cpu',
+    items: ['HTML5 / CSS3', 'Grid / Flex', 'JavaScript (ES6+)', 'TypeScript']
+  },
+  {
+    title: '框架 / 库',
+    icon: 'Grid',
+    items: ['Vue 3', 'Vite', 'Pinia', 'Vue Router', 'Element Plus', 'Axios']
+  },
+  {
+    title: '工具',
+    icon: 'SetUp',
+    items: ['Git', 'npm / yarn', 'ESLint', 'Postman', 'VS Code']
+  }
 ]
-
-const tags = ['ES6+', 'WebSocket', 'Vite', 'Webpack', 'REST API', 'GraphQL', 'Docker', 'Linux']
 </script>
 
 <template>
@@ -17,40 +24,35 @@ const tags = ['ES6+', 'WebSocket', 'Vite', 'Webpack', 'REST API', 'GraphQL', 'Do
     <p class="section-subtitle">我的专业技能与技术能力</p>
 
     <div class="skills-grid">
-      <div v-for="s in skills" :key="s.name" class="skill-card">
-        <div class="skill-head">
-          <span class="name">{{ s.name }}</span>
-          <el-tag v-if="s.tag" type="primary" size="small" effect="dark" round>{{ s.tag }}</el-tag>
+      <div v-for="cat in categories" :key="cat.title" class="skill-card">
+        <div class="card-header">
+          <el-icon :size="24" color="var(--primary)"><component :is="cat.icon" /></el-icon>
+          <h3>{{ cat.title }}</h3>
         </div>
-        <el-progress :percentage="s.level" :stroke-width="8" :show-text="true"
-          color="linear-gradient(90deg, var(--primary), var(--primary-light))" />
+        <div class="tag-list">
+          <el-tag v-for="item in cat.items" :key="item" size="large" effect="plain" round class="tech-tag">
+            {{ item }}
+          </el-tag>
+        </div>
       </div>
-    </div>
-
-    <div class="tags">
-      <el-tag v-for="t in tags" :key="t" size="large" effect="plain" round class="tech-tag">
-        {{ t }}
-      </el-tag>
     </div>
   </section>
 </template>
 
 <style scoped>
 .skills-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
 }
 .skill-card {
-  background: #fff; border-radius: var(--radius); padding: 20px 24px;
+  background: #fff; border-radius: var(--radius); padding: 28px;
   box-shadow: var(--shadow); transition: transform .2s;
 }
-.skill-card:hover { transform: translateY(-2px); }
-.skill-head {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+.skill-card:hover { transform: translateY(-4px); }
+.card-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
 }
-.skill-head .name { font-weight: 600; font-size: 15px; }
-.tags {
-  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 36px;
-}
+.card-header h3 { font-size: 18px; font-weight: 700; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .tech-tag { border-color: var(--primary-light); color: var(--primary); }
 
 @media (max-width: 768px) {

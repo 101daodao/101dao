@@ -1,57 +1,26 @@
 <script setup>
-import { reactive } from 'vue'
-import { ElMessage } from 'element-plus'
-import { User, Message } from '@element-plus/icons-vue'
-
-const form = reactive({ name: '', email: '', message: '' })
-
-const submit = () => {
-  if (!form.name || !form.email || !form.message) {
-    ElMessage.warning('请填写完整信息')
-    return
-  }
-  ElMessage.success('消息已发送，感谢你的联系！')
-  form.name = form.email = form.message = ''
-}
+const contacts = [
+  { icon: 'Message', label: '邮箱', value: '3550420565@qq.com', color: '#2563eb' },
+  { icon: 'Link', label: 'GitHub', value: 'github.com/zhoudaowu', color: '#333' },
+  { icon: 'ChatDotRound', label: '微信', value: 'daow101', color: '#07c160' },
+  { icon: 'Phone', label: '电话', value: '暂无', color: '#e11d48' },
+]
 </script>
 
 <template>
   <section id="contact" class="section" style="background: var(--bg-soft);">
     <h2 class="section-title">联系我</h2>
-    <p class="section-subtitle">有项目合作或想法？随时与我取得联系</p>
+    <p class="section-subtitle">期待与你交流，欢迎通过以下方式联系我</p>
 
     <div class="contact-grid">
-      <div class="contact-info">
-        <div class="info-card">
-          <el-icon :size="28" color="var(--primary)"><Message /></el-icon>
-          <div>
-            <div class="label">邮箱</div>
-            <div class="val">hello@example.com</div>
-          </div>
+      <div v-for="c in contacts" :key="c.label" class="contact-card">
+        <div class="icon-box" :style="{ background: `${c.color}15` }">
+          <el-icon :size="24" :color="c.color"><component :is="c.icon" /></el-icon>
         </div>
-        <div class="info-card">
-          <el-icon :size="28" color="var(--primary)"><Location /></el-icon>
-          <div>
-            <div class="label">地址</div>
-            <div class="val">北京市海淀区</div>
-          </div>
+        <div class="info">
+          <span class="label">{{ c.label }}</span>
+          <span class="value">{{ c.value }}</span>
         </div>
-        <div class="info-card">
-          <el-icon :size="28" color="var(--primary)"><ChatDotRound /></el-icon>
-          <div>
-            <div class="label">微信</div>
-            <div class="val">dev_portfolio</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-card">
-        <el-input v-model="form.name" placeholder="你的姓名" size="large" :prefix-icon="User" />
-        <el-input v-model="form.email" placeholder="邮箱地址" size="large" :prefix-icon="Message" />
-        <el-input v-model="form.message" type="textarea" placeholder="想说的话..." :rows="4" resize="none" />
-        <el-button type="primary" size="large" round @click="submit" style="width:100%">
-          发送消息 <el-icon class="el-icon--right"><Promotion /></el-icon>
-        </el-button>
       </div>
     </div>
   </section>
@@ -59,21 +28,22 @@ const submit = () => {
 
 <style scoped>
 .contact-grid {
-  display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;
+  max-width: 800px; margin: 0 auto;
 }
-.contact-info { display: flex; flex-direction: column; gap: 16px; }
-.info-card {
+.contact-card {
   display: flex; align-items: center; gap: 16px;
-  background: #fff; padding: 20px 24px; border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: #fff; padding: 22px 24px; border-radius: var(--radius);
+  box-shadow: var(--shadow); transition: transform .2s;
 }
-.info-card .label { font-size: 13px; color: var(--text-secondary); }
-.info-card .val { font-size: 15px; font-weight: 500; margin-top: 2px; }
-
-.form-card {
-  background: #fff; padding: 28px; border-radius: var(--radius);
-  box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 16px;
+.contact-card:hover { transform: translateY(-3px); }
+.icon-box {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
+.info { display: flex; flex-direction: column; }
+.label { font-size: 12px; color: var(--text-secondary); }
+.value { font-size: 15px; font-weight: 600; margin-top: 2px; }
 
 @media (max-width: 768px) {
   .contact-grid { grid-template-columns: 1fr; }

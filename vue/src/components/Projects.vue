@@ -1,40 +1,25 @@
 <script setup>
 const projects = [
   {
-    title: '电商管理后台',
-    desc: '基于 Vue3 + Element Plus 的全栈电商后台，支持商品、订单、数据看板管理',
-    tags: ['Vue3', 'Element Plus', 'Node.js'],
-    color: '#2563eb'
+    title: '商品管理系统',
+    desc: '独立完成的全栈商品管理后台，支持完整 CRUD、表单校验、Axios 请求封装、分页筛选等功能，实现前后端联调。',
+    tags: ['Vue3', 'Vite', 'Pinia', 'Element Plus'],
+    color: '#2563eb',
+    highlights: ['完整 CRUD 操作', '请求封装 & 拦截器', '分页 & 筛选功能']
   },
   {
-    title: 'AI 智能助手',
-    desc: '集成大语言模型的对话应用，支持多轮对话、代码高亮与流式响应',
-    tags: ['React', 'TypeScript', 'WebSocket'],
-    color: '#7c3aed'
+    title: '智学 AI 个性化学习系统',
+    desc: '基于 AI 能力的个性化学习平台，根据用户学习行为智能推荐学习内容，支持多学科知识图谱与学习路径规划。',
+    tags: ['Vue3', 'Axios', 'AI API', 'Vant'],
+    color: '#7c3aed',
+    highlights: ['AI 智能推荐算法', '个性化学习路径', '知识图谱可视化']
   },
   {
-    title: '数据可视化平台',
-    desc: '实时数据大屏与图表分析平台，支持自定义看板和数据源配置',
-    tags: ['Vue3', 'ECharts', 'D3.js'],
-    color: '#0891b2'
-  },
-  {
-    title: '移动端社交 App',
-    desc: '跨平台移动应用，支持即时通讯、动态发布、图片滤镜等功能',
-    tags: ['React Native', 'Firebase', 'Expo'],
-    color: '#e11d48'
-  },
-  {
-    title: '开源组件库',
-    desc: '轻量级 Vue3 组件库，包含 30+ 高质量组件，支持主题定制',
-    tags: ['Vue3', 'Vite', 'TypeScript'],
-    color: '#059669'
-  },
-  {
-    title: '个人博客系统',
-    desc: '支持 Markdown 写作的博客平台，集成评论、搜索与 SEO 优化',
-    tags: ['Nuxt3', 'Tailwind', 'MDX'],
-    color: '#d97706'
+    title: '网易云音乐（仿写）',
+    desc: '仿网易云音乐核心功能的音乐播放应用，实现歌曲播放、歌单管理、搜索、歌词同步等完整音乐体验。',
+    tags: ['Vue3', 'Pinia', 'Node.js', 'Vite'],
+    color: '#e11d48',
+    highlights: ['音乐播放 & 歌词同步', '歌单管理', '搜索 & 推荐功能']
   }
 ]
 </script>
@@ -42,23 +27,24 @@ const projects = [
 <template>
   <section id="projects" class="section">
     <h2 class="section-title">精选作品</h2>
-    <p class="section-subtitle">展示我参与和主导的优秀项目</p>
+    <p class="section-subtitle">展示我参与和主导的核心项目</p>
 
     <div class="project-grid">
       <div v-for="(p, i) in projects" :key="i" class="project-card">
-        <div class="card-top" :style="{ background: `linear-gradient(135deg, ${p.color}, ${p.color}88)` }">
+        <div class="card-top" :style="{ background: `linear-gradient(135deg, ${p.color}, ${p.color}99)` }">
           <el-icon :size="36" color="#fff"><Monitor /></el-icon>
         </div>
         <div class="card-body">
           <h3>{{ p.title }}</h3>
-          <p>{{ p.desc }}</p>
+          <p class="desc">{{ p.desc }}</p>
+          <ul class="highlights">
+            <li v-for="h in p.highlights" :key="h">
+              <el-icon :size="14" color="var(--primary)"><Select /></el-icon>
+              {{ h }}
+            </li>
+          </ul>
           <div class="tags">
             <el-tag v-for="t in p.tags" :key="t" size="small" effect="plain" round>{{ t }}</el-tag>
-          </div>
-          <div class="card-actions">
-            <el-button type="primary" text size="small">
-              查看详情 <el-icon class="el-icon--right"><ArrowRight /></el-icon>
-            </el-button>
           </div>
         </div>
       </div>
@@ -79,13 +65,19 @@ const projects = [
   box-shadow: 0 12px 40px rgba(37,99,235,.12);
 }
 .card-top {
-  height: 120px; display: flex; align-items: center; justify-content: center;
+  height: 100px; display: flex; align-items: center; justify-content: center;
 }
 .card-body { padding: 20px; }
 .card-body h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.card-body p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
-.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-.card-actions { padding-top: 4px; }
+.desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+.highlights {
+  list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-direction: column; gap: 6px;
+}
+.highlights li {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text);
+}
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
 
 @media (max-width: 768px) {
   .project-grid { grid-template-columns: 1fr; }

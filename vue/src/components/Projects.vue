@@ -26,13 +26,16 @@ const projects = [
 
 <template>
   <section id="projects" class="section">
-    <h2 class="section-title">精选作品</h2>
-    <p class="section-subtitle">展示我参与和主导的核心项目</p>
+    <h2 class="section-title fade-up">精选作品</h2>
+    <p class="section-subtitle fade-up delay-1">展示我参与和主导的核心项目</p>
 
     <div class="project-grid">
-      <div v-for="(p, i) in projects" :key="i" class="project-card">
+      <div v-for="(p, i) in projects" :key="i"
+        class="project-card fade-up" :class="'delay-' + (i + 2)">
         <div class="card-top" :style="{ background: `linear-gradient(135deg, ${p.color}, ${p.color}99)` }">
-          <el-icon :size="36" color="#fff"><Monitor /></el-icon>
+          <div class="card-icon">
+            <el-icon :size="32" color="#fff"><Monitor /></el-icon>
+          </div>
         </div>
         <div class="card-body">
           <h3>{{ p.title }}</h3>
@@ -58,15 +61,21 @@ const projects = [
 }
 .project-card {
   background: #fff; border-radius: var(--radius); overflow: hidden;
-  box-shadow: var(--shadow); transition: transform .25s, box-shadow .25s;
+  box-shadow: var(--shadow); transition: transform .3s, box-shadow .3s;
 }
 .project-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(37,99,235,.12);
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px rgba(37,99,235,.15);
 }
 .card-top {
-  height: 100px; display: flex; align-items: center; justify-content: center;
+  height: 110px; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
 }
+.card-top::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.15) 0%, transparent 60%);
+}
+.card-icon { position: relative; z-index: 1; }
 .card-body { padding: 20px; }
 .card-body h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }

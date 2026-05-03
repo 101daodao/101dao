@@ -9,35 +9,28 @@ const info = [
 
 <template>
   <section id="about" class="section">
-    <h2 class="section-title">关于我</h2>
-    <p class="section-subtitle">了解更多关于我的故事</p>
+    <h2 class="section-title fade-up">关于我</h2>
+    <p class="section-subtitle fade-up delay-1">了解更多关于我的故事</p>
 
     <div class="about-grid">
-      <div class="avatar-area">
-        <img src="../image/tx.jpg" alt="头像" class="avatar" />
+      <div class="avatar-area fade-left delay-2">
+        <div class="avatar-ring">
+          <img src="../image/tx.jpg" alt="头像" class="avatar" />
+        </div>
         <h3 class="name">周</h3>
-        <span class="title-tag">前端开发工程师</span>
+        <span class="title-tag">在校学生</span>
       </div>
-      <div class="info-area">
+      <div class="info-area fade-right delay-2">
         <h3>一位热爱前端的开发者</h3>
         <p class="bio">
           我是辽宁建筑职业学院软件技术专业24级学生。从大一接触 HTML/CSS 开始，就被"所见即所得"的前端魅力吸引。我主学 Vue3 技术栈，并独立完成了完整的商品管理系统（前后端联调）。课余我参加过 AI 创作大赛，习惯用工程化思维（Git、ESLint、Vite）提升代码质量。
         </p>
         <p class="bio">
-          我虽然还在读书，但已经多个项目的开发经验，渴望在一个有爱的技术团队里快速成长。
+          我虽然还在读书，但已经有多个项目的开发经验，渴望在一个有爱的技术团队里快速成长。
         </p>
         <div class="highlights">
-          <div class="hl-item">
-            <el-icon :size="18" color="var(--primary)"><Trophy /></el-icon>
-            <span>项目驱动学习</span>
-          </div>
-          <div class="hl-item">
-            <el-icon :size="18" color="var(--primary)"><Cpu /></el-icon>
-            <span>工程化开发习惯</span>
-          </div>
-          <div class="hl-item">
-            <el-icon :size="18" color="var(--primary)"><Promotion /></el-icon>
-            <span>快速成长能力</span>
+          <div class="hl-item" v-for="(h, i) in ['🏆 项目驱动学习', '⚙️ 工程化开发', '🚀 快速成长']" :key="i">
+            {{ h }}
           </div>
         </div>
         <div class="info-list">
@@ -59,12 +52,20 @@ const info = [
 .avatar-area {
   display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
-.avatar {
-  width: 180px; height: 180px; border-radius: 50%;
+.avatar-ring {
+  width: 200px; height: 200px; border-radius: 50%; padding: 4px;
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  display: flex; align-items: center; justify-content: center;
   box-shadow: 0 12px 40px rgba(37,99,235,.2);
-  border: 4px solid #fff;
+  animation: ring-pulse 3s ease-in-out infinite;
+}
+@keyframes ring-pulse {
+  0%, 100% { box-shadow: 0 12px 40px rgba(37,99,235,.2); }
+  50% { box-shadow: 0 12px 50px rgba(37,99,235,.35); }
+}
+.avatar {
+  width: 100%; height: 100%; border-radius: 50%;
+  object-fit: cover; object-position: center top;
+  display: block;
 }
 .name { font-size: 22px; font-weight: 700; margin: 0; }
 .title-tag {
@@ -75,11 +76,15 @@ const info = [
 .bio {
   color: var(--text-secondary); line-height: 1.8; margin-bottom: 12px; font-size: 15px;
 }
-.highlights { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.highlights { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
 .hl-item {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 14px; border-radius: 8px;
+  padding: 8px 16px; border-radius: 8px;
   background: var(--bg-soft); font-size: 13px; font-weight: 500;
+  transition: transform .2s, box-shadow .2s;
+}
+.hl-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37,99,235,.1);
 }
 .info-list { display: flex; flex-direction: column; gap: 10px; }
 .info-item {
@@ -90,7 +95,7 @@ const info = [
 
 @media (max-width: 768px) {
   .about-grid { grid-template-columns: 1fr; text-align: center; }
-  .avatar { width: 140px; height: 140px; }
+  .avatar-ring { width: 150px; height: 150px; }
   .hl-item { justify-content: center; }
   .info-item { justify-content: center; }
 }

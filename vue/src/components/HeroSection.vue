@@ -19,7 +19,7 @@ const go = (href) => {
     <div class="hero-content" :class="{ show: visible }">
       <div class="tag"> 欢迎来到我的主页</div>
       <h1>你好，我是<br><span class="highlight">创意开发者</span></h1>
-      <p>热衷于用代码创造优雅的数字体验，专注前端开发与交互设计</p>
+      <p v-typewriter>热衷于用代码创造优雅的数字体验，专注前端开发与交互设计</p>
       <div class="actions">
         <el-button type="primary" size="large" round @click="go('#projects')">
           查看作品 <el-icon class="el-icon--right"><ArrowRight /></el-icon>

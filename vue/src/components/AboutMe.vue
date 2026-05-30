@@ -15,17 +15,17 @@ const info = [
     <div class="about-grid">
       <div class="avatar-area fade-left delay-2">
         <div class="avatar-ring">
-          <img src="../image/tx.jpg" alt="头像" class="avatar" />
+          <img src="../image/tx.jpg" alt="头像" class="avatar" loading="lazy" />
         </div>
         <h3 class="name">周</h3>
         <span class="title-tag">在校学生</span>
       </div>
       <div class="info-area fade-right delay-2">
         <h3>一位热爱前端的开发者</h3>
-        <p class="bio">
+        <p v-typewriter class="bio">
           我是辽宁建筑职业学院软件技术专业24级学生。从大一接触 HTML/CSS 开始，就被"所见即所得"的前端魅力吸引。我主学 Vue3 技术栈，并独立完成了完整的商品管理系统（前后端联调）。课余我参加过 AI 创作大赛，习惯用工程化思维（Git、ESLint、Vite）提升代码质量。
         </p>
-        <p class="bio">
+        <p v-typewriter class="bio">
           我虽然还在读书，但已经有多个项目的开发经验，渴望在一个有爱的技术团队里快速成长。
         </p>
         <div class="highlights">

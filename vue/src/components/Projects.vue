@@ -1,25 +1,41 @@
 <script setup>
+import schoolImg from '../image/school.webp'
+import musicImg from '../image/music.webp'
+import aiImg from '../image/ai.webp'
+import huaweiImg from '../image/huawei.webp'
+
 const projects = [
   {
-    title: '商品管理系统',
-    desc: '独立完成的全栈商品管理后台，支持完整 CRUD、表单校验、Axios 请求封装、分页筛选等功能，实现前后端联调。',
-    tags: ['Vue3', 'Vite', 'Pinia', 'Element Plus'],
+    title: '仿写学校官网',
+    desc: '采用 Bootstrap 框架进行响应式开发，完美适配手机、平板和电脑端。高度还原学校官网的布局与交互设计，包含导航栏、轮播图、新闻资讯、校园风采等核心模块，展现扎实的前端基础功底。',
+    tags: ['Bootstrap', 'HTML5', 'CSS3', 'JavaScript'],
     color: '#2563eb',
-    highlights: ['完整 CRUD 操作', '请求封装 & 拦截器', '分页 & 筛选功能']
+    image: schoolImg,
+    link: 'https://school.zdaow.xyz/'
   },
   {
-    title: '智学 AI 个性化学习系统',
-    desc: '基于 AI 能力的个性化学习平台，根据用户学习行为智能推荐学习内容，支持多学科知识图谱与学习路径规划。',
-    tags: ['Vue3', 'Axios', 'AI API', 'Vant'],
-    color: '#7c3aed',
-    highlights: ['AI 智能推荐算法', '个性化学习路径', '知识图谱可视化']
-  },
-  {
-    title: '网易云音乐（仿写）',
-    desc: '仿网易云音乐核心功能的音乐播放应用，实现歌曲播放、歌单管理、搜索、歌词同步等完整音乐体验。',
+    title: '101 云音乐',
+    desc: '仿网易云音乐核心功能的在线音乐播放应用，实现歌曲播放、歌单管理、搜索发现、歌词同步等完整音乐体验。采用前后端分离架构，界面精美交互流畅，打造沉浸式音乐享受。',
     tags: ['Vue3', 'Pinia', 'Node.js', 'Vite'],
     color: '#e11d48',
-    highlights: ['音乐播放 & 歌词同步', '歌单管理', '搜索 & 推荐功能']
+    image: musicImg,
+    link: 'https://music.zdaow.xyz/'
+  },
+  {
+    title: 'AI 个性化学习系统',
+    desc: '基于 AI 能力的个性化学习平台，根据用户学习行为智能推荐学习内容，支持多学科知识图谱与学习路径规划。融合人工智能技术，为每位学习者量身定制专属学习方案。',
+    tags: ['Vue3', 'Axios', 'AI API', 'Vant'],
+    color: '#7c3aed',
+    image: aiImg,
+    link: 'https://www.zdaow.xyz/'
+  },
+  {
+    title: '仿写华为官网',
+    desc: '采用响应式布局技术完美还原华为官网设计，手机端和电脑端均可流畅使用。包含产品展示、导航交互、动画效果等完整页面模块，充分体现对现代企业级网站开发的理解与实践。',
+    tags: ['响应式布局', 'CSS3 动画', 'JavaScript', 'HTML5'],
+    color: '#cf0a2c',
+    image: huaweiImg,
+    link: 'https://huawei.zdaow.xyz/'
   }
 ]
 </script>
@@ -27,68 +43,198 @@ const projects = [
 <template>
   <section id="projects" class="section">
     <h2 class="section-title fade-up">精选作品</h2>
-    <p class="section-subtitle fade-up delay-1">展示我参与和主导的核心项目</p>
+    <p class="section-subtitle fade-up delay-1">展示我参与和主导的核心项目 · 点击卡片即可访问</p>
 
     <div class="project-grid">
-      <div v-for="(p, i) in projects" :key="i"
-        class="project-card fade-up" :class="'delay-' + (i + 2)">
-        <div class="card-top" :style="{ background: `linear-gradient(135deg, ${p.color}, ${p.color}99)` }">
-          <div class="card-icon">
-            <el-icon :size="32" color="#fff"><Monitor /></el-icon>
+      <a
+        v-for="(p, i) in projects"
+        :key="i"
+        :href="p.link"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="project-card fade-up"
+        :class="'delay-' + (i + 2)"
+      >
+        <!-- 项目截图 -->
+        <div class="card-image-wrap">
+          <img :src="p.image" :alt="p.title" class="card-image" loading="lazy" />
+          <div class="card-image-overlay" :style="{ background: `linear-gradient(135deg, ${p.color}cc, ${p.color}66)` }">
+            <span class="visit-hint">
+              <el-icon :size="18"><View /></el-icon>
+              点击访问项目
+            </span>
           </div>
         </div>
+
+        <!-- 项目信息 -->
         <div class="card-body">
-          <h3>{{ p.title }}</h3>
-          <p class="desc">{{ p.desc }}</p>
-          <ul class="highlights">
-            <li v-for="h in p.highlights" :key="h">
-              <el-icon :size="14" color="var(--primary)"><Select /></el-icon>
-              {{ h }}
-            </li>
-          </ul>
+          <h3 class="card-title">{{ p.title }}</h3>
+          <p v-typewriter="p.desc" class="desc"></p>
           <div class="tags">
             <el-tag v-for="t in p.tags" :key="t" size="small" effect="plain" round>{{ t }}</el-tag>
           </div>
         </div>
-      </div>
+
+        <!-- 底部跳转提示 -->
+        <div class="card-footer" :style="{ borderColor: p.color + '22' }">
+          <span class="link-text" :style="{ color: p.color }">
+            访问项目
+            <el-icon :size="14"><Right /></el-icon>
+          </span>
+        </div>
+      </a>
     </div>
   </section>
 </template>
 
 <style scoped>
 .project-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
 }
+
 .project-card {
-  background: #fff; border-radius: var(--radius); overflow: hidden;
-  box-shadow: var(--shadow); transition: transform .3s, box-shadow .3s;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
 }
+
 .project-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 16px 48px rgba(37,99,235,.15);
+  box-shadow: 0 20px 48px rgba(37,99,235,.15);
 }
-.card-top {
-  height: 110px; display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
-}
-.card-top::after {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.15) 0%, transparent 60%);
-}
-.card-icon { position: relative; z-index: 1; }
-.card-body { padding: 20px; }
-.card-body h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
-.highlights {
-  list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-direction: column; gap: 6px;
-}
-.highlights li {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 13px; color: var(--text);
-}
-.tags { display: flex; gap: 6px; flex-wrap: wrap; }
 
-@media (max-width: 768px) {
-  .project-grid { grid-template-columns: 1fr; }
+/* ===== 项目截图 ===== */
+.card-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #f0f5ff;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .5s cubic-bezier(.16,1,.3,1);
+}
+
+.project-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+.card-image-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity .35s;
+}
+
+.project-card:hover .card-image-overlay {
+  opacity: 1;
+}
+
+.visit-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(0,0,0,.25);
+  backdrop-filter: blur(6px);
+  padding: 8px 20px;
+  border-radius: 24px;
+  letter-spacing: .5px;
+}
+
+/* ===== 卡片内容 ===== */
+.card-body {
+  padding: 20px 22px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 14px;
+  min-height: 48px;
+  flex: 1;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+/* ===== 底部跳转 ===== */
+.card-footer {
+  padding: 14px 22px;
+  border-top: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.link-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: gap .3s;
+}
+
+.project-card:hover .link-text {
+  gap: 8px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 860px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-body {
+    padding: 16px;
+  }
+  .card-title {
+    font-size: 16px;
+  }
+  .desc {
+    font-size: 13px;
+  }
+  .card-footer {
+    padding: 12px 16px;
+  }
 }
 </style>

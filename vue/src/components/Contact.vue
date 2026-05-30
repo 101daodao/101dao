@@ -1,7 +1,7 @@
 <script setup>
 const contacts = [
-  { icon: 'Message', label: '邮箱', value: '3550420565@qq.com', color: '#2563eb' },
-  { icon: 'Link', label: 'GitHub', value: 'github.com/zhoudaowu', color: '#333' },
+  { icon: 'Message', label: '邮箱', value: 'zdw060127@163.com', color: '#2563eb' },
+  { icon: 'Link', label: 'GitHub', value: 'github.com/101daodao/101daoAI', color: '#333' },
   { icon: 'ChatDotRound', label: '微信', value: 'daow101', color: '#07c160' },
   { icon: 'Phone', label: '电话', value: '暂无', color: '#e11d48' }
 ]

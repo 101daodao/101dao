@@ -16,15 +16,15 @@ const projects = [
   {
     title: '101 云音乐',
     desc: '仿网易云音乐核心功能的在线音乐播放应用，实现歌曲播放、歌单管理、搜索发现、歌词同步等完整音乐体验。采用前后端分离架构，界面精美交互流畅，打造沉浸式音乐享受。',
-    tags: ['Vue3', 'Pinia', 'Node.js', 'Vite'],
+    tags: ['Vue3', 'Pinia', 'Node.js', 'Vite',],
     color: '#e11d48',
     image: musicImg,
     link: 'https://music.zdaow.xyz/'
   },
   {
     title: 'AI 个性化学习系统',
-    desc: '基于 AI 能力的个性化学习平台，根据用户学习行为智能推荐学习内容，支持多学科知识图谱与学习路径规划。融合人工智能技术，为每位学习者量身定制专属学习方案。',
-    tags: ['Vue3', 'Axios', 'AI API', 'Vant'],
+    desc: 'Vue 3 全家桶 + Element Plus 搭建，从路由设计到状态管理全独立完成。接入了大模型 API，实现了 AI 问答和个性化学习推荐，用了 SSE 做流式对话。Composition API + 路由懒加载，该有的工程化都有。',
+    tags: ['Vue3', 'Axios', 'AI API', 'Element Plus'],
     color: '#7c3aed',
     image: aiImg,
     link: 'https://www.zdaow.xyz/'
@@ -32,7 +32,7 @@ const projects = [
   {
     title: '仿写华为官网',
     desc: '采用响应式布局技术完美还原华为官网设计，手机端和电脑端均可流畅使用。包含产品展示、导航交互、动画效果等完整页面模块，充分体现对现代企业级网站开发的理解与实践。',
-    tags: ['响应式布局', 'CSS3 动画', 'JavaScript', 'HTML5'],
+    tags: ['Bootstrap', 'CSS3 动画', 'JavaScript', 'vue3', 'Element Plus'],
     color: '#cf0a2c',
     image: huaweiImg,
     link: 'https://huawei.zdaow.xyz/'
@@ -42,7 +42,7 @@ const projects = [
 
 <template>
   <section id="projects" class="section">
-    <h2 class="section-title fade-up">精选作品</h2>
+    <h2 class="section-title fade-up">作品集</h2>
     <p class="section-subtitle fade-up delay-1">展示我参与和主导的核心项目 · 点击卡片即可访问</p>
 
     <div class="project-grid">

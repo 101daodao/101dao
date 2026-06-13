@@ -2,7 +2,6 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const scrolled = ref(false)
-const mobileMenu = ref(false)
 const cursorRef = ref(null)
 const capsuleRef = ref(null)
 const scrollProgress = ref(0)
@@ -24,7 +23,6 @@ onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true 
 onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
 const go = (href) => {
-  mobileMenu.value = false
   document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
 }
 
@@ -73,24 +71,7 @@ onMounted(() => {
           {{ l.label }}
         </a>
       </nav>
-
-      <!-- Mobile Toggle -->
-      <button class="menu-btn" @click="mobileMenu = !mobileMenu" :aria-label="mobileMenu ? '关闭菜单' : '打开菜单'">
-        <span class="menu-line" :class="{ open: mobileMenu }"></span>
-        <span class="menu-line" :class="{ open: mobileMenu }"></span>
-      </button>
     </div>
-
-    <!-- Mobile overlay + slide menu -->
-    <div class="nav-overlay" :class="{ visible: mobileMenu }" @click="mobileMenu = false"></div>
-    <nav class="nav-mobile-panel" :class="{ open: mobileMenu }">
-      <a
-        v-for="l in links"
-        :key="l.href"
-        class="mobile-link"
-        @click="go(l.href)"
-      >{{ l.label }}</a>
-    </nav>
   </header>
 </template>
 
@@ -193,92 +174,10 @@ onMounted(() => {
   text-shadow: 0 0 12px rgba(148, 163, 240, 0.3);
 }
 
-/* ===== Mobile Toggle ===== */
-.menu-btn {
-  display: none;
-  position: absolute;
-  right: 24px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-.menu-line {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: rgba(244, 244, 245, 0.8);
-  border-radius: 2px;
-  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-}
-.menu-line:first-child { top: 0; }
-.menu-line:last-child { bottom: 0; }
-
-.menu-line.open:first-child { transform: translateY(9px) rotate(45deg); }
-.menu-line.open:last-child { transform: translateY(-9px) rotate(-45deg); }
-
-/* Overlay */
-.nav-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 997;
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.nav-overlay.visible { opacity: 1; }
-
-/* Mobile Panel */
-.nav-mobile-panel {
-  display: none;
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 260px;
-  height: 100vh;
-  flex-direction: column;
-  background: rgba(12, 12, 18, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 88px 32px 32px;
-  gap: 4px;
-  transition: right 0.4s cubic-bezier(0.16,1,0.3,1);
-  z-index: 998;
-}
-.nav-mobile-panel.open { right: 0; }
-
-.mobile-link {
-  padding: 14px 12px;
-  font-size: 16px;
-  font-weight: 500;
-  color: rgba(200, 205, 220, 0.7);
-  cursor: pointer;
-  text-decoration: none;
-  border-radius: 10px;
-  transition: all 0.25s;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-.mobile-link:last-child { border-bottom: none; }
-.mobile-link:hover {
-  color: #f4f4f5;
-  background: rgba(255, 255, 255, 0.05);
-}
-
+/* ===== Mobile Toggle — removed ===== */
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .nav-capsule { display: none; }
-  .menu-btn { display: block; }
-  .nav-overlay { display: block; pointer-events: none; }
-  .nav-overlay.visible { pointer-events: auto; }
-  .nav-mobile-panel { display: flex; }
+  .nav-item { padding: 6px 12px; font-size: 12px; }
+  .nav-capsule { padding: 4px; }
 }
 </style>

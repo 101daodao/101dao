@@ -184,11 +184,13 @@ onMounted(() => {
     const rect = heroRef.value?.getBoundingClientRect()
     if (!rect) return
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
+    const w = Math.floor(rect.width)
+    const h = Math.floor(rect.height)
+    canvas.width = w * dpr
+    canvas.height = h * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    canvas.style.width = rect.width + 'px'
-    canvas.style.height = rect.height + 'px'
+    canvas.style.width = w + 'px'
+    canvas.style.height = h + 'px'
     generateStars(W(), H())
     generateCoreParticles()
   }
@@ -821,6 +823,8 @@ onMounted(() => {
   position: absolute;
   inset: 0;
   z-index: 1;
+  width: 100%;
+  height: 100%;
 }
 
 /* ===== Planet Tooltip ===== */

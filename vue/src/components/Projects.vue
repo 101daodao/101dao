@@ -4,6 +4,8 @@ import schoolImg from '../image/school.webp'
 import musicImg from '../image/music.webp'
 import aiImg from '../image/ai.webp'
 import ershouImg from '../image/ershou.png'
+import SpaceGlass from './SpaceGlass.vue'
+import PlanetMini from './PlanetMini.vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { EffectCards } from 'swiper/modules'
 
@@ -12,39 +14,31 @@ import 'swiper/css/effect-cards'
 
 const projects = [
   {
-    title: '仿写学校官网',
-    subtitle: 'Bootstrap 响应式开发',
+    title: '仿写学校官网', subtitle: 'Bootstrap 响应式开发',
     desc: '还原导航、轮播图、新闻资讯等核心模块',
     tags: ['Bootstrap', 'HTML5', 'CSS3', 'JavaScript'],
-    color: '#3b82f6',
-    image: schoolImg,
+    color: '#428cff', image: schoolImg,
     link: 'https://school.zdaow.xyz/'
   },
   {
-    title: '101 云音乐',
-    subtitle: 'Vue3 全栈音乐平台',
+    title: '101 云音乐', subtitle: 'Vue3 全栈音乐平台',
     desc: '歌曲播放、歌单管理、歌词同步等完整体验',
     tags: ['Vue3', 'Pinia', 'Node.js', 'Vite'],
-    color: '#e11d48',
-    image: musicImg,
+    color: '#e11d48', image: musicImg,
     link: 'https://music.zdaow.xyz/'
   },
   {
-    title: 'AI 智学系统',
-    subtitle: 'AI + Vue3 智能学习',
+    title: 'AI 智学系统', subtitle: 'AI + Vue3 智能学习',
     desc: '接入大模型 API，SSE 流式对话，AI 个性化推荐',
     tags: ['Vue3', 'Axios', 'AI API', 'Element Plus'],
-    color: '#8b5cf6',
-    image: aiImg,
+    color: '#9748ff', image: aiImg,
     link: 'https://www.zdaow.xyz/'
   },
   {
-    title: '校园二手交易平台',
-    subtitle: 'Vue3 校园交易',
+    title: '校园二手交易平台', subtitle: 'Vue3 校园交易',
     desc: '基于 Vue3 + Element Plus 构建，适配多端，支持商品发布与搜索',
     tags: ['Vue3', 'Element Plus', 'Vite', 'Axios'],
-    color: '#22c55e',
-    link: 'https://ershou.zdaow.xyz/',
+    color: '#22c55e', link: 'https://ershou.zdaow.xyz/',
     image: ershouImg
   }
 ]
@@ -55,7 +49,6 @@ const infoKey = ref(0)
 
 const currentProject = computed(() => projects[activeIndex.value] || projects[0])
 
-// Arc nav
 const navItems = computed(() => {
   const total = projects.length
   return projects.map((p, i) => {
@@ -63,93 +56,76 @@ const navItems = computed(() => {
     let normOffset = offset
     if (normOffset > total / 2) normOffset -= total
     if (normOffset < -total / 2) normOffset += total
-
     const dist = Math.abs(normOffset)
     const opacity = dist === 0 ? 1 : Math.max(0.15, 0.65 - dist * 0.2)
     const scale = dist === 0 ? 1 : Math.max(0.55, 1 - dist * 0.15)
     const angleStep = 28
     const angle = normOffset * angleStep
-
-    return {
-      ...p,
-      index: i,
-      isActive: i === activeIndex.value,
-      opacity,
-      scale,
-      angle
-    }
+    return { ...p, index: i, isActive: i === activeIndex.value, opacity, scale, angle }
   })
 })
 
-const onSwiper = (swiper) => {
-  swiperRef.value = swiper
-}
-
-const onSlideChange = (swiper) => {
-  activeIndex.value = swiper.realIndex
-  infoKey.value++
-}
-
+const onSwiper = (swiper) => { swiperRef.value = swiper }
+const onSlideChange = (swiper) => { activeIndex.value = swiper.realIndex; infoKey.value++ }
 const goToSlide = (index) => {
   if (index === activeIndex.value) return
   swiperRef.value?.slideToLoop(index)
 }
+const goHome = () => {
+  document.querySelector('#hero')?.scrollIntoView({ behavior: 'smooth' })
+}
 </script>
 
 <template>
-  <section id="projects" class="section projects-section" style="--section-glow: rgba(212, 184, 150, 0.06)">
-    <div class="dust-line"></div>
-    <h2 class="section-title fade-up">Projects</h2>
+  <section id="projects" class="projects-page page-section">
+    <div class="page-corner-stars"></div>
+
+    <h2 class="section-title fade-up">
+      <span class="orbit-icon"></span>
+      Projects
+    </h2>
     <p class="section-subtitle fade-up delay-1">核心作品展示</p>
 
     <div class="showcase-area orbit-arc delay-2" style="--arc-deg: 20">
-      <!-- ===== Card Stage (center + side cards) ===== -->
+      <!-- 卡片舞台 -->
       <div class="card-stage">
         <swiper
           :modules="[EffectCards]"
           effect="cards"
           :grab-cursor="true"
           :loop="true"
-          :cards-effect="{
-            perSlideOffset: 20,
-            perSlideRotate: 8,
-            rotate: true,
-            slideShadows: false
-          }"
+          :cards-effect="{ perSlideOffset: 20, perSlideRotate: 8, rotate: true, slideShadows: false }"
           @swiper="onSwiper"
           @slide-change="onSlideChange"
           class="project-swiper"
         >
           <swiper-slide v-for="(p, i) in projects" :key="i" class="proj-slide">
-            <div class="proj-card" :style="{ '--accent': p.color }">
-              <div class="proj-media" :class="{ 'no-img': !p.image }">
-                <img v-if="p.image" :src="p.image" :alt="p.title" class="proj-img" loading="lazy" />
-                <div v-else class="proj-placeholder">
-                  <svg viewBox="0 0 120 80" fill="none" class="ph-svg" :style="{ color: p.color + '55' }">
-                    <rect x="4" y="4" width="112" height="72" rx="8" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/>
-                    <path d="M36 56l12-10 9 9 16-14 13 11v13H36V56z" stroke="currentColor" stroke-width="1.2"/>
-                    <circle cx="44" cy="28" r="6" stroke="currentColor" stroke-width="1.2"/>
-                  </svg>
+            <SpaceGlass :padded="false" :corner-stars="false">
+              <div class="proj-card" :style="{ '--accent': p.color }">
+                <div class="proj-media" :class="{ 'no-img': !p.image }">
+                  <img v-if="p.image" :src="p.image" :alt="p.title" class="proj-img" loading="lazy" />
+                  <div v-else class="proj-placeholder">
+                    <svg viewBox="0 0 120 80" fill="none" class="ph-svg" :style="{ color: p.color + '55' }">
+                      <rect x="4" y="4" width="112" height="72" rx="8" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/>
+                      <path d="M36 56l12-10 9 9 16-14 13 11v13H36V56z" stroke="currentColor" stroke-width="1.2"/>
+                      <circle cx="44" cy="28" r="6" stroke="currentColor" stroke-width="1.2"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
+            </SpaceGlass>
           </swiper-slide>
         </swiper>
       </div>
 
-      <!-- ===== Text Info (name slides up) ===== -->
+      <!-- 文字信息 -->
       <div class="text-info">
         <transition name="slide-up" mode="out-in">
           <div :key="'name-' + infoKey" class="text-inner">
             <span class="project-subtitle">{{ currentProject.subtitle }}</span>
             <h3 class="project-title">{{ currentProject.title }}</h3>
-            <a
-              :href="currentProject.link"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="view-btn"
-              :style="{ '--btn-accent': currentProject.color }"
-            >
+            <a :href="currentProject.link" target="_blank" rel="noopener noreferrer"
+               class="view-btn" :style="{ '--btn-accent': currentProject.color }">
               <span>查看项目</span>
               <svg viewBox="0 0 20 20" fill="currentColor" class="play-icon">
                 <path d="M6 4l10 6-10 6V4z"/>
@@ -159,13 +135,11 @@ const goToSlide = (index) => {
         </transition>
       </div>
 
-      <!-- ===== Arc Square Nav (larger) ===== -->
+      <!-- 弧形导航 -->
       <div class="arc-nav">
         <button
-          v-for="item in navItems"
-          :key="item.index"
-          class="nav-dot"
-          :class="{ active: item.isActive }"
+          v-for="item in navItems" :key="item.index"
+          class="nav-dot" :class="{ active: item.isActive }"
           :style="{
             '--dot-angle': item.angle + 'deg',
             '--dot-scale': item.scale,
@@ -181,29 +155,36 @@ const goToSlide = (index) => {
       </div>
     </div>
 
-    <!-- ===== Tags Row ===== -->
+    <!-- 标签行 -->
     <div class="tags-row fade-up delay-3" :key="'tags-' + infoKey">
       <span v-for="(t, ti) in currentProject.tags" :key="t" class="tag-pill" :style="{ '--i': ti }">{{ t }}</span>
     </div>
+
+    <!-- 右下角悬浮行星 (画布创意行星) -->
+    <PlanetMini color="#d4b896" :size="44" type="gas" @click="goHome" />
   </section>
 </template>
 
 <style scoped>
-.projects-section {
-  background: #08080a;
+.projects-page {
+  justify-content: flex-start;
+  padding-top: 140px;
+  min-height: 100vh;
   overflow: hidden;
+  background: transparent;
 }
 
-/* ===== Showcase ===== */
 .showcase-area {
   display: flex;
   flex-direction: column;
   align-items: center;
   max-width: 700px;
+  width: 100%;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
-/* ===== Card Stage (visible cards effect) ===== */
 .card-stage {
   width: 100%;
   max-width: 600px;
@@ -211,33 +192,26 @@ const goToSlide = (index) => {
   margin-bottom: 28px;
 }
 
-.project-swiper {
-  width: 100%;
-}
+.project-swiper { width: 100%; }
 
 .proj-slide {
   border-radius: 16px;
   overflow: hidden;
 }
 
-/* Make side cards visible */
 .project-swiper :deep(.swiper-slide) {
   border-radius: 16px;
   overflow: hidden;
-  transition:
-    filter 0.45s ease,
-    transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  transition: filter 0.45s ease, transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-/* Non-active cards: dimmed + slightly transparent */
 .project-swiper :deep(.swiper-slide:not(.swiper-slide-active)) .proj-card {
-  filter: brightness(0.5);
+  filter: brightness(0.45);
 }
 .project-swiper :deep(.swiper-slide:not(.swiper-slide-active)) .proj-img {
-  filter: brightness(0.5) saturate(0.7);
+  filter: brightness(0.45) saturate(0.6);
 }
 
-/* Active card: bright */
 .project-swiper :deep(.swiper-slide-active) .proj-card {
   filter: brightness(1);
 }
@@ -245,11 +219,6 @@ const goToSlide = (index) => {
 .proj-card {
   border-radius: 16px;
   overflow: hidden;
-  background: #121218;
-  border: 1px solid rgba(255,255,255,0.07);
-  box-shadow:
-    0 8px 40px rgba(0,0,0,0.5),
-    0 0 60px color-mix(in srgb, var(--accent) 5%, transparent);
   transition: filter 0.35s ease;
 }
 
@@ -257,7 +226,6 @@ const goToSlide = (index) => {
   position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  background: #18181f;
 }
 
 .proj-media.no-img {
@@ -292,7 +260,7 @@ const goToSlide = (index) => {
   opacity: 0.3;
 }
 
-/* ===== Text Info ===== */
+/* 文字信息 */
 .text-info {
   text-align: center;
   min-height: 140px;
@@ -303,9 +271,7 @@ const goToSlide = (index) => {
   overflow: hidden;
 }
 
-.text-inner {
-  text-align: center;
-}
+.text-inner { text-align: center; }
 
 .project-subtitle {
   display: block;
@@ -313,7 +279,7 @@ const goToSlide = (index) => {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #71717a;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -321,12 +287,11 @@ const goToSlide = (index) => {
   font-size: clamp(30px, 6vw, 46px);
   font-weight: 900;
   letter-spacing: -0.03em;
-  color: #f4f4f5;
+  color: var(--text-primary);
   line-height: 1.15;
   margin: 0 0 22px;
 }
 
-/* View Button */
 .view-btn {
   display: inline-flex;
   align-items: center;
@@ -351,50 +316,28 @@ const goToSlide = (index) => {
   gap: 12px;
 }
 
-.play-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.7;
-  transition: opacity 0.25s;
-}
+.play-icon { width: 14px; height: 14px; opacity: 0.7; transition: opacity 0.25s; }
+.view-btn:hover .play-icon { opacity: 1; }
 
-.view-btn:hover .play-icon {
-  opacity: 1;
-}
-
-/* Slide up transition for name */
+/* 过渡 */
 .slide-up-enter-active {
   animation: name-slide-up 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
 }
-
 .slide-up-leave-active {
   animation: name-slide-up-out 0.25s cubic-bezier(0.7,0,0.84,0) forwards;
   position: absolute;
 }
 
 @keyframes name-slide-up {
-  0% {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes name-slide-up-out {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-16px);
-  }
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-16px); }
 }
 
-/* ===== Arc Nav (larger squares) ===== */
+/* 弧形导航 */
 .arc-nav {
   position: relative;
   width: 260px;
@@ -406,35 +349,26 @@ const goToSlide = (index) => {
 
 .nav-dot {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 26px;
-  height: 26px;
+  top: 50%; left: 50%;
+  width: 26px; height: 26px;
   border-radius: 7px;
-  background: #27272a;
-  border: none;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
   cursor: pointer;
   outline: none;
-  transition:
-    transform 0.48s cubic-bezier(0.34,1.56,0.64,1),
-    background 0.3s ease,
-    box-shadow 0.3s ease,
-    opacity 0.32s ease;
+  transition: transform 0.48s cubic-bezier(0.34,1.56,0.64,1),
+              background 0.3s ease, box-shadow 0.3s ease, opacity 0.32s ease;
 }
 
 .nav-dot:hover {
-  background: #3f3f46;
+  background: rgba(66,140,255,0.2);
+  border-color: rgba(151,72,255,0.3);
 }
 
 .nav-dot.active {
-  background: #e4e4e7;
-  box-shadow:
-    0 0 18px rgba(255,255,255,0.22),
-    0 0 48px rgba(255,255,255,0.08);
-}
-
-.nav-dot.active:hover {
-  background: #fff;
+  background: rgba(66,140,255,0.3);
+  border-color: rgba(151,72,255,0.5);
+  box-shadow: 0 0 18px rgba(66,140,255,0.3), 0 0 48px rgba(151,72,255,0.1);
 }
 
 .sr-only {
@@ -446,7 +380,7 @@ const goToSlide = (index) => {
   border: 0;
 }
 
-/* ===== Tags ===== */
+/* 标签行 */
 .tags-row {
   display: flex;
   gap: 8px;
@@ -454,6 +388,8 @@ const goToSlide = (index) => {
   justify-content: center;
   max-width: 500px;
   margin: 28px auto 0;
+  position: relative;
+  z-index: 2;
 }
 
 .tag-pill {
@@ -462,9 +398,9 @@ const goToSlide = (index) => {
   border-radius: 8px;
   font-size: 12px;
   font-weight: 500;
-  color: #a1a1aa;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-secondary);
+  background: rgba(66,140,255,0.05);
+  border: 1px solid rgba(66,140,255,0.12);
   animation: tag-in 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
   animation-delay: calc(var(--i, 0) * 0.05s);
   opacity: 0;
@@ -475,33 +411,22 @@ const goToSlide = (index) => {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Responsive ===== */
+/* 响应式 */
 @media (max-width: 800px) {
   .card-stage { max-width: 480px; }
   .arc-nav { width: 220px; height: 110px; }
   .nav-dot { width: 24px; height: 24px; }
   .nav-dot { transform: rotate(var(--dot-angle)) translateY(-62px) scale(var(--dot-scale)) !important; }
 }
-
 @media (max-width: 640px) {
   .card-stage { max-width: 380px; }
-  .showcase-area { max-width: 400px; }
-
   .project-title { font-size: 28px; }
-  .project-subtitle { font-size: 12px; }
-  .view-btn { padding: 8px 20px; font-size: 12px; }
-
   .arc-nav { width: 190px; height: 95px; }
   .nav-dot { width: 22px; height: 22px; border-radius: 6px; }
   .nav-dot { transform: rotate(var(--dot-angle)) translateY(-56px) scale(var(--dot-scale)) !important; }
-
-  .text-info { min-height: 120px; margin-bottom: 32px; }
 }
-
 @media (max-width: 420px) {
   .card-stage { max-width: 300px; }
-  .showcase-area { max-width: 320px; }
-
   .project-title { font-size: 24px; }
   .arc-nav { width: 160px; height: 85px; }
   .nav-dot { width: 20px; height: 20px; }

@@ -1,23 +1,30 @@
 /* ========================================
-   Design System — Inspired by Secret Level
-   Dark · Cinematic · Minimal · Electric
+   Design System — Unified Space Theme
+   深空蓝紫渐变体系 · 全站复用动画库 · 轨道/星点装饰
    ======================================== */
 
 :root {
   /* Core palette */
-  --bg-deep: #08080a;
-  --bg: #0c0c10;
-  --bg-surface: #121218;
-  --bg-elevated: #18181f;
-  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-deep: #00010a;
+  --bg: #030410;
+  --bg-surface: rgba(0, 0, 14, 0.5);
+  --bg-elevated: rgba(0, 0, 20, 0.6);
+  --bg-glass: rgba(0, 0, 14, 0.65);
 
-  /* Accent */
-  --accent: #3b82f6;
-  --accent-glow: rgba(59, 130, 246, 0.25);
-  --accent-soft: rgba(59, 130, 246, 0.08);
-  --accent-secondary: #8b5cf6;
-  --gradient-accent: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  --gradient-subtle: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.06));
+  /* ── 统一主渐变: 深空蓝 → 星云紫 ── */
+  --space-blue: #428cff;
+  --space-purple: #9748ff;
+  --gradient-space: linear-gradient(135deg, #428cff 0%, #9748ff 100%);
+  --gradient-space-h: linear-gradient(90deg, #428cff 0%, #9748ff 100%);
+  --gradient-space-subtle: linear-gradient(135deg, rgba(66,140,255,0.08), rgba(151,72,255,0.06));
+
+  /* Accent (兼容旧变量) */
+  --accent: #428cff;
+  --accent-glow: rgba(66, 140, 255, 0.3);
+  --accent-soft: rgba(66, 140, 255, 0.08);
+  --accent-secondary: #9748ff;
+  --gradient-accent: var(--gradient-space);
+  --gradient-subtle: var(--gradient-space-subtle);
 
   /* Text */
   --text-primary: #f4f4f5;
@@ -27,6 +34,7 @@
   /* Border */
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-default: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(66, 140, 255, 0.2);
 
   /* Layout */
   --radius-sm: 8px;
@@ -39,11 +47,13 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.12);
+  --shadow-glow: 0 0 40px rgba(66, 140, 255, 0.12);
+  --shadow-space: 0 0 30px rgba(66, 140, 255, 0.08), 0 0 60px rgba(151, 72, 255, 0.05);
 
   /* Transition */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 /* ===== Reset ===== */
@@ -360,5 +370,254 @@ body::before {
   .section-subtitle {
     font-size: 14px;
     margin-bottom: 48px;
+  }
+}
+
+/* ============================================
+   统一装饰语言 — 轨道 · 星点 · 呼吸 · 光效
+   ============================================ */
+
+/* ── 迷你环形轨道图标 (模块标题左侧) ── */
+.orbit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  position: relative;
+  flex-shrink: 0;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.orbit-icon::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1.5px solid rgba(66, 140, 255, 0.3);
+  border-radius: 50%;
+  animation: orbit-icon-spin 6s linear infinite;
+}
+.orbit-icon::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--space-blue);
+  border-radius: 50%;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(66, 140, 255, 0.6), 0 0 16px rgba(66, 140, 255, 0.3);
+}
+
+@keyframes orbit-icon-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 渐变轨道分割线 (标题下方) ── */
+.gradient-divider {
+  width: 80px;
+  height: 2px;
+  margin: 12px auto 32px;
+  background: var(--gradient-space-h);
+  border-radius: 1px;
+  opacity: 0.6;
+  position: relative;
+}
+.gradient-divider::after {
+  content: '';
+  position: absolute;
+  inset: -3px -8px;
+  border-radius: 4px;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, rgba(66,140,255,0.15), transparent);
+}
+
+/* ── 蓝→紫水平渐变发光分割线 (导航下方全站统一) ── */
+.nav-gradient-line {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  z-index: 998;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(66, 140, 255, 0.15) 10%,
+    rgba(66, 140, 255, 0.5) 25%,
+    rgba(151, 72, 255, 0.6) 50%,
+    rgba(66, 140, 255, 0.5) 75%,
+    rgba(66, 140, 255, 0.15) 90%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px rgba(66, 140, 255, 0.15),
+              0 0 24px rgba(151, 72, 255, 0.1);
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-gradient-line.scrolled {
+  top: 56px;
+}
+
+/* ── 页面四角漂浮星点 ── */
+.page-corner-stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.page-corner-stars::before,
+.page-corner-stars::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(200, 220, 255, 0.5);
+  border-radius: 50%;
+  animation: corner-star-float 4s ease-in-out infinite;
+}
+.page-corner-stars::before {
+  top: 6%;
+  left: 4%;
+  animation-delay: 0s;
+}
+.page-corner-stars::after {
+  top: 8%;
+  right: 5%;
+  animation-delay: 1.2s;
+}
+
+@keyframes corner-star-float {
+  0%, 100% { opacity: 0.2; transform: translateY(0) scale(0.8); }
+  50% { opacity: 0.8; transform: translateY(-12px) scale(1.3); }
+}
+
+/* ── 呼吸光晕动画 (全局复用) ── */
+@keyframes breath-glow {
+  0%, 100% { opacity: 0.3; filter: blur(0px); }
+  50% { opacity: 0.8; filter: blur(2px); }
+}
+
+.breath-glow {
+  animation: breath-glow 3s ease-in-out infinite;
+}
+
+/* ── 环形星轨扩散 hover 光效 (按钮/标签通用) ── */
+@keyframes orbit-expand {
+  0% {
+    box-shadow: 0 0 0 0 rgba(66, 140, 255, 0.3),
+                0 0 0 0 rgba(151, 72, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(66, 140, 255, 0),
+                0 0 0 16px rgba(151, 72, 255, 0);
+  }
+}
+
+.orbit-hover {
+  transition: all 0.35s var(--ease-out);
+}
+.orbit-hover:hover {
+  animation: orbit-expand 1s var(--ease-out) forwards;
+  border-color: rgba(66, 140, 255, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+/* ── 星点缓慢漂浮动画 (全局复用) ── */
+@keyframes star-drift-slow {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  25% { transform: translate(6px, -8px) scale(1.2); opacity: 0.7; }
+  50% { transform: translate(-4px, -14px) scale(0.9); opacity: 0.4; }
+  75% { transform: translate(-8px, -4px) scale(1.1); opacity: 0.6; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+}
+
+.star-drift {
+  animation: star-drift-slow 8s ease-in-out infinite;
+}
+
+/* ── 渐变边框脉冲 (用于聚焦元素) ── */
+@keyframes border-pulse {
+  0%, 100% { border-color: rgba(66, 140, 255, 0.15); }
+  50% { border-color: rgba(151, 72, 255, 0.35); }
+}
+
+.border-pulse {
+  animation: border-pulse 3s ease-in-out infinite;
+}
+
+/* ── 文字逐行淡入 ── */
+@keyframes line-fade-in {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.line-fade-in {
+  opacity: 0;
+  animation: line-fade-in 0.7s var(--ease-expo) forwards;
+}
+
+/* ── 视差偏移 (内页滚动用) ── */
+.parallax-slow {
+  transition: transform 0.1s linear;
+  will-change: transform;
+}
+
+/* ── 内页 section 统一底层容器 ── */
+.page-section {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px;
+  overflow: hidden;
+  /* 每个内页自带微弱星空氛围底纹 */
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(66, 140, 255, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 30% 70%, rgba(151, 72, 255, 0.03) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 70% 30%, rgba(66, 140, 255, 0.02) 0%, transparent 50%);
+}
+
+.page-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(66,140,255,0.03), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 迷你行星容器 (内页右下悬浮) ── */
+.planet-anchor {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 500;
+}
+
+@media (max-width: 768px) {
+  .page-section {
+    padding: 80px 16px;
+  }
+  .nav-gradient-line {
+    top: 64px;
+  }
+  .nav-gradient-line.scrolled {
+    top: 48px;
+  }
+}
+
+/* ── 减少动画偏好 ── */
+@media (prefers-reduced-motion: reduce) {
+  .orbit-icon::before,
+  .breath-glow,
+  .star-drift,
+  .border-pulse,
+  .orbit-hover:hover {
+    animation: none !important;
+  }
+  .orbit-icon::after {
+    animation: none !important;
   }
 }

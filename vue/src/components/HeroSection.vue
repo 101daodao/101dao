@@ -273,7 +273,10 @@ onMounted(() => {
       const nav = clickStartPlanet.nav
       const el = document.querySelector(nav)
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth' })
+        // 镜头飞向目标行星动画
+        flyToPlanet(clickStartPlanet, () => {
+          el.scrollIntoView({ behavior: 'smooth' })
+        })
       } else {
         console.warn('HeroSection: target not found:', nav)
       }
@@ -281,6 +284,47 @@ onMounted(() => {
     isDragging = false
     clickStartPlanet = null
     if (canvas) canvas.style.cursor = mouseOnCanvas ? (hoveredPlanet ? 'pointer' : 'grab') : 'default'
+  }
+
+  /* ── 镜头飞向行星 + 星空淡化过渡 ── */
+  let isFlying = false
+  const flyToPlanet = (planet, onComplete) => {
+    if (isFlying) return
+    isFlying = true
+    const startZoom = targetZoom
+    const endZoom = 3.5
+    const startTime = performance.now()
+    const duration = 800
+
+    const animateFly = (ts) => {
+      const elapsed = ts - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      // ease-in-out
+      const t = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress
+
+      targetZoom = startZoom + (endZoom - startZoom) * t
+      // 镜头朝向行星
+      const px = planet.x, pz = planet.z
+      const dist = Math.hypot(px, pz)
+      if (dist > 0) {
+        targetRotY = Math.atan2(px, pz) * 0.4
+        targetRotX = -0.2
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animateFly)
+      } else {
+        // 复位 + 触发回调
+        setTimeout(() => {
+          targetZoom = 1.25
+          targetRotY = 0.3
+          targetRotX = -0.55
+          isFlying = false
+          onComplete()
+        }, 200)
+      }
+    }
+    requestAnimationFrame(animateFly)
   }
 
   heroRef.value.addEventListener('mousedown', onDown)
@@ -752,7 +796,8 @@ onMounted(() => {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: #000108;
+  /* 透明底 + 暗色渐变叠加，让全局星空底图穿透 */
+  background: radial-gradient(ellipse 80% 60% at 50% 35%, rgba(0, 1, 8, 0.45) 0%, rgba(0, 1, 8, 0.82) 100%);
 }
 
 /* ===== 星空背景图 ===== */
@@ -1028,12 +1073,12 @@ onMounted(() => {
 }
 .btn-glass:hover .btn-icon { opacity: 1; }
 
-/* ===== Bottom fade ===== */
+/* ===== Bottom fade — 平滑过渡到内页，星空底图始终穿透 ===== */
 .bottom-fade {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 140px;
-  background: linear-gradient(to top, #08080a, transparent);
+  height: 250px;
+  background: linear-gradient(to top, rgba(3, 4, 16, 0.75) 0%, rgba(3, 4, 16, 0.35) 50%, transparent 100%);
   z-index: 2;
   pointer-events: none;
 }

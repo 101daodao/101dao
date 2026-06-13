@@ -1,4 +1,7 @@
 <script setup>
+import SpaceGlass from './SpaceGlass.vue'
+import PlanetMini from './PlanetMini.vue'
+
 const categories = [
   {
     title: '基础',
@@ -16,104 +19,88 @@ const categories = [
     items: ['Git', 'npm / yarn', 'ESLint', 'Postman', 'VS Code']
   }
 ]
+
+const goHome = () => {
+  document.querySelector('#hero')?.scrollIntoView({ behavior: 'smooth' })
+}
 </script>
 
 <template>
-  <section id="skills" class="section skills-section" style="--section-glow: rgba(232, 96, 64, 0.06)">
-    <!-- Subtle floating particles -->
+  <section id="skills" class="skills-page page-section">
+    <div class="page-corner-stars"></div>
+
+    <!-- 浮动粒子 -->
     <div class="skills-bg">
-      <span class="bg-particle" v-for="n in 6" :key="n" :style="{
-        left: (n * 17 + (n % 3) * 5) + '%',
-        animationDelay: (n * 0.7) + 's',
-        animationDuration: (6 + n * 1.5) + 's',
-        width: (4 + n % 3 * 3) + 'px',
-        height: (4 + n % 3 * 3) + 'px'
+      <span class="bg-particle" v-for="n in 8" :key="n" :style="{
+        left: (n * 14 + (n % 3) * 4) + '%',
+        animationDelay: (n * 0.6) + 's',
+        animationDuration: (7 + n * 1.5) + 's',
+        width: (3 + n % 3 * 3) + 'px',
+        height: (3 + n % 3 * 3) + 'px'
       }"></span>
     </div>
-    <h2 class="section-title fade-up">Skills</h2>
+
+    <h2 class="section-title fade-up">
+      <span class="orbit-icon"></span>
+      Skills
+    </h2>
     <p class="section-subtitle fade-up delay-1">持续打磨的技术栈</p>
 
     <div class="skills-grid">
       <div
         v-for="(cat, i) in categories"
         :key="cat.title"
-        class="skill-card glow-track orbit-in"
+        class="skill-card-wrapper orbit-in"
         :class="'delay-' + (i + 2)"
         :style="{ '--orbit-angle': 40 + i * 50, '--orbit-dist': 60 + i * 15 }"
       >
-        <!-- Glow border -->
-        <div class="card-glow"></div>
-
-        <!-- Header -->
-        <div class="card-header">
-          <div class="icon-box">
-            <el-icon :size="18"><component :is="cat.icon" /></el-icon>
+        <SpaceGlass glow corner-stars :padded="false">
+          <div class="skill-card-inner">
+            <div class="card-header">
+              <div class="icon-box">
+                <el-icon :size="18"><component :is="cat.icon" /></el-icon>
+              </div>
+              <span class="card-count">{{ String(cat.items.length).padStart(2, '0') }}</span>
+            </div>
+            <h3 class="card-title">{{ cat.title }}</h3>
+            <div class="tag-list">
+              <span v-for="item in cat.items" :key="item" class="tech-tag orbit-hover">
+                {{ item }}
+              </span>
+            </div>
           </div>
-          <span class="card-count">{{ String(cat.items.length).padStart(2, '0') }}</span>
-        </div>
-
-        <h3 class="card-title">{{ cat.title }}</h3>
-
-        <!-- Tags -->
-        <div class="tag-list">
-          <span v-for="item in cat.items" :key="item" class="tech-tag">
-            {{ item }}
-          </span>
-        </div>
+        </SpaceGlass>
       </div>
     </div>
+
+    <!-- 右下角悬浮行星 (齿轮科技行星) -->
+    <PlanetMini color="#e86040" :size="38" type="rocky" @click="goHome" />
   </section>
 </template>
 
 <style scoped>
-.skills-section {
-  background: var(--bg);
-  position: relative;
+.skills-page {
+  justify-content: flex-start;
+  padding-top: 140px;
+  min-height: 100vh;
+  background: transparent;
 }
 
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
-/* ===== Card ===== */
-.skill-card {
-  position: relative;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+.skill-card-inner {
   padding: 32px 28px;
-  transition: border-color 0.35s, transform 0.35s var(--ease-out), box-shadow 0.35s;
-  overflow: hidden;
 }
 
-.skill-card:hover {
-  border-color: rgba(59, 130, 246, 0.25);
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-glow);
-}
-
-/* Glow hover effect */
-.card-glow {
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent-glow), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.5s;
-  pointer-events: none;
-}
-.skill-card:hover .card-glow {
-  opacity: 0.6;
-}
-
-/* Header */
 .card-header {
   display: flex;
   align-items: center;
@@ -125,16 +112,12 @@ const categories = [
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: var(--accent-soft);
+  background: rgba(66, 140, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent);
   transition: transform 0.25s var(--ease-spring), background 0.25s;
-}
-.skill-card:hover .icon-box {
-  transform: scale(1.1);
-  background: rgba(59, 130, 246, 0.15);
 }
 
 .card-count {
@@ -153,7 +136,6 @@ const categories = [
   letter-spacing: -0.02em;
 }
 
-/* Tags */
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -166,20 +148,21 @@ const categories = [
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  background: rgba(59, 130, 246, 0.06);
+  background: rgba(66, 140, 255, 0.06);
   color: var(--accent);
-  border: 1px solid rgba(59, 130, 246, 0.12);
-  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  border: 1px solid rgba(66, 140, 255, 0.12);
   cursor: default;
+  transition: all 0.3s;
 }
 
 .tech-tag:hover {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25);
-  transform: translateY(-1px);
+  background: rgba(66, 140, 255, 0.12);
+  border-color: rgba(151, 72, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(66, 140, 255, 0.12);
 }
 
-/* ===== Floating Background Particles ===== */
+/* 浮动粒子 */
 .skills-bg {
   position: absolute;
   inset: 0;
@@ -198,28 +181,17 @@ const categories = [
 }
 
 @keyframes particle-drift {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(0.6);
-  }
-  10% {
-    opacity: 0.15;
-  }
-  90% {
-    opacity: 0.08;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(500px) scale(1.2);
-  }
+  0% { opacity: 0; transform: translateY(0) scale(0.6); }
+  10% { opacity: 0.15; }
+  90% { opacity: 0.08; }
+  100% { opacity: 0; transform: translateY(600px) scale(1.2); }
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .skills-grid {
     grid-template-columns: 1fr;
   }
-  .skill-card {
+  .skill-card-inner {
     padding: 24px 22px;
   }
 }

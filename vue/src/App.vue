@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
 import AboutMe from './components/AboutMe.vue'
@@ -8,8 +8,26 @@ import Projects from './components/Projects.vue'
 import Contact from './components/Contact.vue'
 import ComingSoon from './components/ComingSoon.vue'
 import FooterSec from './components/FooterSec.vue'
+import SpaceBackground from './components/SpaceBackground.vue'
+import starBg from './image/星空.jpeg'
+
+/**
+ * 全站星空背景控制
+ * 首页: 透明度 100%, 完整渲染 + 星空图片底纹
+ * 内页: 星空图片底纹 25%~35% + canvas 星空叠加 15%
+ */
+const isHome = ref(true)
+const heroVisible = ref(true)
+
+const bgOpacity = computed(() => isHome.value ? 1 : 0.15)
+const bgReduced = computed(() => !isHome.value)
+const starBgImg = computed(() => `url(${starBg})`)
+
+/* 通过 IntersectionObserver 判断当前在首页还是内页 */
+let heroObserver = null
 
 onMounted(() => {
+  /* 入场动画观察器 */
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach(e => {
@@ -34,20 +52,72 @@ onMounted(() => {
       el.style.setProperty('--mouse-y', y + '%')
     })
   })
+
+  /* 监听首页可见性 — 控制星空透明度 */
+  const heroEl = document.getElementById('hero')
+  if (heroEl) {
+    heroObserver = new IntersectionObserver(
+      (entries) => {
+        heroVisible.value = entries[0].isIntersecting
+        isHome.value = entries[0].isIntersecting
+      },
+      { threshold: [0, 0.2, 0.5, 0.8] }
+    )
+    heroObserver.observe(heroEl)
+  }
+})
+
+onUnmounted(() => {
+  if (heroObserver) heroObserver.disconnect()
 })
 </script>
 
 <template>
+  <!-- 全站星空图片底纹（内页时显示，确保星空感不丢失） -->
+  <div class="global-star-bg" :class="{ 'is-inner': !isHome }" :style="{ backgroundImage: starBgImg }"></div>
+
+  <!-- 全站统一星空 canvas 动态层 -->
+  <SpaceBackground
+    :opacity="bgOpacity"
+    :reduced="bgReduced"
+    :parallax-reverse="!isHome"
+  />
+
   <NavBar />
   <main>
     <HeroSection />
-    <ComingSoon id="coming-soon-1" title="探索" en="Explore" color="#c8c8d0" icon="🔭" />
-    <ComingSoon id="coming-soon-2" title="发现" en="Discover" color="#f0d8a8" icon="✨" />
     <AboutMe />
     <Skills />
     <Projects />
     <Contact />
+    <!-- 未开发页面放最后 -->
+    <ComingSoon id="coming-soon-1" title="探索" en="Explore" color="#c8c8d0" icon="🔭" />
+    <ComingSoon id="coming-soon-2" title="发现" en="Discover" color="#f0d8a8" icon="✨" />
     <ComingSoon id="coming-soon-3" title="未来" en="Future" color="#5588ee" icon="🌌" />
   </main>
   <FooterSec />
 </template>
+
+<style>
+/* ── 全局星空图片底纹 — 始终显示，消除所有断层 ── */
+.global-star-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.4;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.global-star-bg.is-inner {
+  opacity: 0.5;
+}
+
+/* 主内容层置于星空之上 */
+main {
+  position: relative;
+  z-index: 1;
+}
+</style>

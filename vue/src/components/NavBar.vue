@@ -72,6 +72,8 @@ onMounted(() => {
         </a>
       </nav>
     </div>
+    <!-- 全站统一蓝→紫水平渐变发光分割线 -->
+    <div class="nav-gradient-line" :class="{ scrolled }"></div>
   </header>
 </template>
 

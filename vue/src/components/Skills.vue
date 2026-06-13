@@ -19,7 +19,7 @@ const categories = [
 </script>
 
 <template>
-  <section id="skills" class="section skills-section">
+  <section id="skills" class="section skills-section" style="--section-glow: rgba(232, 96, 64, 0.06)">
     <!-- Subtle floating particles -->
     <div class="skills-bg">
       <span class="bg-particle" v-for="n in 6" :key="n" :style="{
@@ -37,8 +37,9 @@ const categories = [
       <div
         v-for="(cat, i) in categories"
         :key="cat.title"
-        class="skill-card glow-track fade-scale"
+        class="skill-card glow-track orbit-in"
         :class="'delay-' + (i + 2)"
+        :style="{ '--orbit-angle': 40 + i * 50, '--orbit-dist': 60 + i * 15 }"
       >
         <!-- Glow border -->
         <div class="card-glow"></div>

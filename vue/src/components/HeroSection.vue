@@ -19,33 +19,30 @@ let targetZoom = 1.25
 
 let isDragging = false
 let dragPrev = { x: 0, y: 0 }
+let dragTotal = 0 // total drag distance — used to distinguish drag vs click
 let mouse = { x: 0, y: 0 }
 let smoothMouse = { x: 0, y: 0 }
 let mouseOnCanvas = false
 
-/* Tooltip */
+/* Tooltip / Nav label */
 let hoveredPlanet = null
 
 /* ============================================
    Multi-layer star fields
    ============================================ */
-// Layer 0: Far deep field — tiny, slow twinkle, strong parallax
-// Layer 1: Mid field — medium, moderate twinkle
-// Layer 2: Near field — larger, fast twinkle, subtle parallax
-// Layer 3: Nebula gas blobs
 let starLayers = []
 let nebulaBlobs = []
 
-/* Planets */
+/* Planets — all 8 are navigable */
 const planetDefs = [
-  { id: 'mercury', name: '水星', nameCN: 'Mercury', orbit: 100, size: 6,    speed: 0.016,  color: '#c8c8d0', type: 'rocky',  ring: false,  desc: '最小的行星，离太阳最近' },
-  { id: 'venus',   name: '金星', nameCN: 'Venus',   orbit: 145, size: 9,    speed: 0.012,  color: '#f0d8a8', type: 'rocky',  ring: false,  desc: '最亮的行星，表面被云层覆盖' },
-  { id: 'earth',   name: '地球', nameCN: 'Earth',   orbit: 195, size: 10,   speed: 0.010,  color: '#5db8ff', type: 'rocky',  ring: false,  desc: '我们的家园，唯一已知存在生命的星球' },
-  { id: 'mars',    name: '火星', nameCN: 'Mars',    orbit: 245, size: 7.5,  speed: 0.008,  color: '#e86040', type: 'rocky',  ring: false,  desc: '红色星球，人类探索的下一个目标' },
-  { id: 'jupiter', name: '木星', nameCN: 'Jupiter', orbit: 320, size: 22,   speed: 0.005,  color: '#d4b896', type: 'gas',    ring: false,  desc: '太阳系最大的行星，有大红斑风暴' },
-  { id: 'saturn',  name: '土星', nameCN: 'Saturn',  orbit: 400, size: 18,   speed: 0.004,  color: '#e8d5a3', type: 'gas',    ring: true,   desc: '以壮丽的环系统闻名' },
-  { id: 'uranus',  name: '天王星', nameCN: 'Uranus',  orbit: 470, size: 13,   speed: 0.003,  color: '#8ad0ee', type: 'ice',    ring: false,  desc: '侧躺着旋转的冰巨星' },
-  { id: 'neptune', name: '海王星', nameCN: 'Neptune', orbit: 530, size: 12.5, speed: 0.0025, color: '#5588ee', type: 'ice',    ring: false,  desc: '太阳系最远的行星，风速极快' },
+  { id: 'mercury', name: '探索',   en: 'Explore',  orbit: 100, size: 6,    speed: 0.016,  color: '#c8c8d0', type: 'rocky',  ring: false,  desc: '更多精彩内容即将上线', nav: '#coming-soon-1' },
+  { id: 'venus',   name: '发现',   en: 'Discover', orbit: 145, size: 9,    speed: 0.012,  color: '#f0d8a8', type: 'rocky',  ring: false,  desc: '未知的领域等待探索', nav: '#coming-soon-2' },
+  { id: 'earth',   name: '关于',   en: 'About',    orbit: 195, size: 10,   speed: 0.010,  color: '#5db8ff', type: 'rocky',  ring: false,  desc: '一位热爱前端工程与AI协作的在校开发者', nav: '#about' },
+  { id: 'mars',    name: '技能',   en: 'Skills',   orbit: 245, size: 7.5,  speed: 0.008,  color: '#e86040', type: 'rocky',  ring: false,  desc: '持续打磨的技术栈与工具链', nav: '#skills' },
+  { id: 'jupiter', name: '作品',   en: 'Projects', orbit: 320, size: 22,   speed: 0.005,  color: '#d4b896', type: 'gas',    ring: false,  desc: '核心项目作品展示', nav: '#projects' },
+  { id: 'saturn',  name: '联系',   en: 'Contact',  orbit: 400, size: 18,   speed: 0.004,  color: '#e8d5a3', type: 'gas',    ring: true,   desc: '期待与你建立连接', nav: '#contact' },
+  { id: 'uranus',  name: '首页',   en: 'Home',     orbit: 470, size: 13,   speed: 0.003,  color: '#8ad0ee', type: 'ice',    ring: false,  desc: '返回顶部 · 用代码创造优雅体验', nav: '#hero' },
+  { id: 'neptune', name: '未来',   en: 'Future',   orbit: 530, size: 12.5, speed: 0.0025, color: '#5588ee', type: 'ice',    ring: false,  desc: '更多创意与可能即将揭晓', nav: '#coming-soon-3' },
 ]
 
 let planets = []
@@ -221,13 +218,6 @@ onMounted(() => {
     return { x: e.clientX - rect.left, y: e.clientY - rect.top }
   }
 
-  const onDown = (e) => {
-    isDragging = true
-    dragPrev = getPos(e)
-    canvas.style.cursor = 'grabbing'
-    hideTooltip()
-  }
-
   const onMove = (e) => {
     const pos = getPos(e)
     mouse = pos
@@ -236,6 +226,7 @@ onMounted(() => {
     if (isDragging) {
       const dx = pos.x - dragPrev.x
       const dy = pos.y - dragPrev.y
+      dragTotal += Math.hypot(dx, dy)
       targetRotY += dx * 0.005
       targetRotX -= dy * 0.005
       targetRotX = Math.max(-1.3, Math.min(0.3, targetRotX))
@@ -243,11 +234,6 @@ onMounted(() => {
     }
 
     checkHover(pos)
-  }
-
-  const onUp = () => {
-    isDragging = false
-    canvas.style.cursor = mouseOnCanvas ? 'grab' : 'default'
   }
 
   const onLeave = () => {
@@ -268,31 +254,50 @@ onMounted(() => {
     }
   }
 
-  /* ---- Click on planet ---- */
-  const onClick = (e) => {
-    if (isDragging) return
+  /* ---- Click on planet — navigate (via mousedown/mouseup pair) ---- */
+  let clickStartPlanet = null
+
+  const onDown = (e) => {
     const pos = getPos(e)
-    const clicked = findPlanetAt(pos)
-    if (clicked) {
-      showTooltip(clicked, pos)
-    } else {
-      hideTooltip()
+    isDragging = true
+    dragTotal = 0
+    dragPrev = pos
+    clickStartPlanet = findPlanetAt(pos)
+    if (canvas) canvas.style.cursor = 'grabbing'
+    hideTooltip()
+  }
+
+  const onUp = () => {
+    // Check if this was a click (not a drag) on a planet
+    if (dragTotal < 5 && clickStartPlanet && clickStartPlanet.nav) {
+      const nav = clickStartPlanet.nav
+      const el = document.querySelector(nav)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        console.warn('HeroSection: target not found:', nav)
+      }
     }
+    isDragging = false
+    clickStartPlanet = null
+    if (canvas) canvas.style.cursor = mouseOnCanvas ? (hoveredPlanet ? 'pointer' : 'grab') : 'default'
   }
 
   heroRef.value.addEventListener('mousedown', onDown)
-  window.addEventListener('mousemove', onMove)
+  heroRef.value.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', onUp)
   heroRef.value.addEventListener('mouseleave', onLeave)
   heroRef.value.addEventListener('wheel', onWheel, { passive: false })
-  heroRef.value.addEventListener('click', onClick)
 
   /* ---- Planet hit test ---- */
   const findPlanetAt = (pos) => {
+    // p.sx/p.sy are relative to canvas center, pos is relative to hero top-left
+    const cx = W() / 2
+    const cy = H() / 2 + 20
     for (let i = planets.length - 1; i >= 0; i--) {
       const p = planets[i]
-      const dx = pos.x - p.sx
-      const dy = pos.y - p.sy
+      const dx = pos.x - (cx + p.sx)
+      const dy = pos.y - (cy + p.sy)
       const hitR = Math.max(p.size * p.scale * 1.5, 12)
       if (Math.hypot(dx, dy) < hitR) return p
     }
@@ -305,23 +310,27 @@ onMounted(() => {
       hoveredPlanet = p
       if (p) {
         canvas.style.cursor = 'pointer'
+        showTooltip(p, pos)
       } else {
         canvas.style.cursor = isDragging ? 'grabbing' : 'grab'
+        hideTooltip()
       }
     }
   }
 
-  /* ---- Tooltip ---- */
+  /* ---- Tooltip (nav label) ---- */
   const showTooltip = (planet, pos) => {
     if (!tooltipRef.value) return
     const el = tooltipRef.value
+    const accent = planet.color
     el.innerHTML = `
-      <div class="tip-name">${planet.name} <span class="tip-en">${planet.nameCN}</span></div>
+      <div class="tip-name" style="color:${accent}">${planet.name} <span class="tip-en">${planet.en}</span></div>
       <div class="tip-desc">${planet.desc}</div>
+      <div class="tip-action">点击探索 →</div>
     `
     el.classList.add('show')
-    const x = Math.min(pos.x + 20, (heroRef.value?.getBoundingClientRect().width || 800) - 180)
-    const y = Math.max(pos.y - 50, 10)
+    const x = Math.min(pos.x + 20, (heroRef.value?.getBoundingClientRect().width || 800) - 200)
+    const y = Math.max(pos.y - 60, 10)
     el.style.left = x + 'px'
     el.style.top = y + 'px'
   }
@@ -553,7 +562,10 @@ onMounted(() => {
     ctx.translate(cx, cy)
 
     planets.forEach(p => {
-      p.angle += p.speed
+      // Pause rotation when hovered
+      if (!hoveredPlanet || hoveredPlanet.id !== p.id) {
+        p.angle += p.speed
+      }
       const px = Math.cos(p.angle) * p.orbit
       const pz = Math.sin(p.angle) * p.orbit
       const proj = project(px, 0, pz)
@@ -622,11 +634,25 @@ onMounted(() => {
         }
       }
 
-      // Highlight on hover
+      // Highlight on hover — glow ring + paused orbit
       if (hoveredPlanet && hoveredPlanet.id === p.id) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
-        ctx.lineWidth = 1.5
-        ctx.beginPath(); ctx.arc(sx, sy, r + 3, 0, Math.PI * 2); ctx.stroke()
+        // Outer glow ring
+        const hoverGlow = ctx.createRadialGradient(sx, sy, r * 0.8, sx, sy, r * 2.2)
+        hoverGlow.addColorStop(0, p.color + '50')
+        hoverGlow.addColorStop(0.5, p.color + '18')
+        hoverGlow.addColorStop(1, 'transparent')
+        ctx.fillStyle = hoverGlow
+        ctx.beginPath(); ctx.arc(sx, sy, r * 2.2, 0, Math.PI * 2); ctx.fill()
+
+        // Bright border ring
+        ctx.strokeStyle = p.color + 'aa'
+        ctx.lineWidth = 2
+        ctx.beginPath(); ctx.arc(sx, sy, r + 4, 0, Math.PI * 2); ctx.stroke()
+
+        // Inner bright ring
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
+        ctx.lineWidth = 1
+        ctx.beginPath(); ctx.arc(sx, sy, r + 1, 0, Math.PI * 2); ctx.stroke()
       }
     })
     ctx.restore()
@@ -658,11 +684,10 @@ onMounted(() => {
     if (animFrame) cancelAnimationFrame(animFrame)
     animFrame = null
     heroRef.value?.removeEventListener('mousedown', onDown)
-    window.removeEventListener('mousemove', onMove)
+    heroRef.value?.removeEventListener('mousemove', onMove)
     window.removeEventListener('mouseup', onUp)
     heroRef.value?.removeEventListener('mouseleave', onLeave)
     heroRef.value?.removeEventListener('wheel', onWheel)
-    heroRef.value?.removeEventListener('click', onClick)
     canvas = null
     ctx = null
   })
@@ -741,6 +766,7 @@ onMounted(() => {
   opacity: 0.85;
   animation: star-bg-breath 6s ease-in-out infinite;
   pointer-events: none;
+  user-select: none;
 }
 
 @keyframes star-bg-breath {
@@ -822,22 +848,24 @@ onMounted(() => {
 .star-canvas {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 6;
   width: 100%;
   height: 100%;
+  pointer-events: auto;
 }
 
 /* ===== Planet Tooltip ===== */
 .planet-tooltip {
   position: absolute;
-  z-index: 10;
-  background: rgba(10, 12, 24, 0.85);
+  z-index: 20;
+  background: rgba(10, 12, 24, 0.9);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 14px 18px;
   pointer-events: none;
+  user-select: none;
   opacity: 0;
   transform: translateY(6px);
   transition: opacity 0.3s, transform 0.3s;
@@ -895,11 +923,15 @@ onMounted(() => {
   transform: translateY(28px);
   transition: opacity 1.2s cubic-bezier(0.16,1,0.3,1),
               transform 1.2s cubic-bezier(0.16,1,0.3,1);
-  pointer-events: auto;
+  pointer-events: none;
 }
 .hero-content.show {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
+}
+.hero-content .btn-glass {
+  pointer-events: auto;
 }
 
 .text-block { position: relative; }

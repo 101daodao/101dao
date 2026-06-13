@@ -8,13 +8,14 @@ const info = [
 </script>
 
 <template>
-  <section id="about" class="section">
+  <section id="about" class="section" style="--section-glow: rgba(93, 184, 255, 0.07)">
+    <div class="dust-line"></div>
     <h2 class="section-title fade-up">About</h2>
     <p class="section-subtitle fade-up delay-1">一位热爱前端工程与 AI 协作的在校开发者</p>
 
     <div class="about-grid">
-      <!-- Avatar Column -->
-      <div class="avatar-col fade-left delay-2">
+      <!-- Avatar Column — sweeps in from left arc -->
+      <div class="avatar-col orbit-arc delay-2" style="--arc-deg: 35">
         <div class="avatar-frame">
           <div class="avatar-glow"></div>
           <div class="avatar-orbit"></div>
@@ -28,12 +29,12 @@ const info = [
         </div>
       </div>
 
-      <!-- Content Column -->
-      <div class="content-col fade-right delay-2">
+      <!-- Content Column — flies in from right orbit -->
+      <div class="content-col orbit-in delay-3" style="--orbit-angle: 110; --orbit-dist: 80">
         <h3 class="content-heading">从代码爱好者到工程化实践者</h3>
 
         <div class="bio-blocks">
-          <div class="bio-block glow-track">
+          <div class="bio-block glow-track orbit-in delay-4" style="--orbit-angle: 90; --orbit-dist: 60">
             <div class="bio-icon">
               <el-icon :size="18"><component :is="'Cpu'" /></el-icon>
             </div>
@@ -44,7 +45,7 @@ const info = [
             </div>
           </div>
 
-          <div class="bio-block glow-track">
+          <div class="bio-block glow-track orbit-in delay-5" style="--orbit-angle: 70; --orbit-dist: 60">
             <div class="bio-icon">
               <el-icon :size="18"><component :is="'SetUp'" /></el-icon>
             </div>
@@ -57,7 +58,7 @@ const info = [
         </div>
 
         <!-- Highlights -->
-        <div class="highlights">
+        <div class="highlights orbit-in delay-6" style="--orbit-angle: 60; --orbit-dist: 40">
           <div class="hl-item" v-for="(h, i) in ['项目驱动学习', '工程化开发', '快速成长']" :key="i">
             <span class="hl-dot"></span>
             {{ h }}
@@ -65,7 +66,7 @@ const info = [
         </div>
 
         <!-- Info Grid -->
-        <div class="info-grid">
+        <div class="info-grid orbit-in delay-7" style="--orbit-angle: 45; --orbit-dist: 30">
           <div v-for="item in info" :key="item.label" class="info-card">
             <div class="info-icon-wrap">
               <el-icon :size="15"><component :is="item.icon" /></el-icon>

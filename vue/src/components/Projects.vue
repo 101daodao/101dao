@@ -97,11 +97,12 @@ const goToSlide = (index) => {
 </script>
 
 <template>
-  <section id="projects" class="section projects-section">
+  <section id="projects" class="section projects-section" style="--section-glow: rgba(212, 184, 150, 0.06)">
+    <div class="dust-line"></div>
     <h2 class="section-title fade-up">Projects</h2>
     <p class="section-subtitle fade-up delay-1">核心作品展示</p>
 
-    <div class="showcase-area fade-up delay-2">
+    <div class="showcase-area orbit-arc delay-2" style="--arc-deg: 20">
       <!-- ===== Card Stage (center + side cards) ===== -->
       <div class="card-stage">
         <swiper

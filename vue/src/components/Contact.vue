@@ -8,7 +8,8 @@ const contacts = [
 </script>
 
 <template>
-  <section id="contact" class="section contact-section">
+  <section id="contact" class="section contact-section" style="--section-glow: rgba(232, 213, 163, 0.06)">
+    <div class="dust-line"></div>
     <h2 class="section-title fade-up">Contact</h2>
     <p class="section-subtitle fade-up delay-1">期待与你建立连接</p>
 
@@ -16,8 +17,9 @@ const contacts = [
       <div
         v-for="(c, i) in contacts"
         :key="c.label"
-        class="contact-card glow-track fade-scale"
+        class="contact-card glow-track orbit-in"
         :class="'delay-' + (i + 2)"
+        :style="{ '--orbit-angle': 20 + i * 40, '--orbit-dist': 40 + i * 10 }"
       >
         <div class="contact-glow" :style="{ background: `radial-gradient(circle at center, ${c.color}22, transparent 70%)` }"></div>
 

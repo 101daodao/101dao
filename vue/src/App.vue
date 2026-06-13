@@ -22,6 +22,17 @@ onMounted(() => {
     { threshold: 0.15 }
   )
   document.querySelectorAll('.fade-up,.fade-left,.fade-right,.fade-scale').forEach(el => observer.observe(el))
+
+  /* Glow-track mouse follow */
+  document.querySelectorAll('.glow-track').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width) * 100
+      const y = ((e.clientY - rect.top) / rect.height) * 100
+      el.style.setProperty('--mouse-x', x + '%')
+      el.style.setProperty('--mouse-y', y + '%')
+    })
+  })
 })
 </script>
 

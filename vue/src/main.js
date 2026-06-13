@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import './assets/styles/global.css'
-import { vTypewriter } from './directives/typewriter'
 
 // 按需导入项目中实际使用的 Element Plus 图标
 import {
@@ -32,6 +31,4 @@ for (const [key, comp] of Object.entries(icons)) {
   app.component(key, comp)
 }
 
-// 全局注册打字机指令
-app.directive('typewriter', vTypewriter)
 app.mount('#app')

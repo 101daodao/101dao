@@ -1,7 +1,7 @@
 <script setup>
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
-import contactBg from '../image/通用.jpg'
+import contactBg from '../image/联系.jpg'
 
 const contacts = [
   { icon: 'Message', label: '邮箱', value: 'zdw060127@163.com', color: '#428cff' },

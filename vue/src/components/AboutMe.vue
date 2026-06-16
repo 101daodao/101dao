@@ -1,7 +1,7 @@
 <script setup>
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
-import aboutBg from '../image/通用.jpg'
+import aboutBg from '../image/关于我.jpg'
 
 const info = [
   { icon: 'School', label: '学校', value: '辽宁建筑职业学院' },

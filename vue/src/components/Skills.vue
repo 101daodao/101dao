@@ -1,7 +1,7 @@
 <script setup>
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
-import skillsBg from '../image/通用.jpg'
+import skillsBg from '../image/技能.jpg'
 
 const categories = [
   {

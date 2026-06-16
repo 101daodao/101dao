@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import heroVideo from '../image/动态主页.mp4'
-import heroBgImage from '../image/星空.jpeg'
+import heroBgImage from '../image/关于我.jpg'
 
 const visible = ref(false)
 const heroRef = ref(null)
@@ -12,7 +12,7 @@ let ctx = null, canvas = null, animFrame = null
    Canvas → Image → Video 三模式背景循环
    每段6秒，明快切换
    ============================================ */
-const DURATION = 8000 // 8 秒切换
+const DURATION = 6000 // 8 秒切换
 
 const bgMode = ref('canvas') // 'canvas' | 'image' | 'video'
 let imageTimer = null

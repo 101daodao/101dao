@@ -1,11 +1,38 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import heroVideo from '../image/动态主页.mp4'
+import heroBgImage from '../image/星空.jpeg'
 
 const visible = ref(false)
 const heroRef = ref(null)
 const tooltipRef = ref(null)
 let ctx = null, canvas = null, animFrame = null
+
+/* ============================================
+   Video ↔ Image loop background
+   ============================================ */
+const bgMode = ref('video') // 'video' | 'image'
+let imageTimer = null
+
+const onVideoEnded = () => {
+  bgMode.value = 'image'
+  // 暂停视频并回到开头
+  const video = heroRef.value?.querySelector('.hero-video')
+  if (video) {
+    video.pause()
+    video.currentTime = 0
+  }
+
+  imageTimer = setTimeout(() => {
+    bgMode.value = 'video'
+    nextTick(() => {
+      const video = heroRef.value?.querySelector('.hero-video')
+      if (video) {
+        video.play()
+      }
+    })
+  }, 10000)
+}
 
 /* ============================================
    Solar System State
@@ -734,15 +761,20 @@ onMounted(() => {
     heroRef.value?.removeEventListener('wheel', onWheel)
     canvas = null
     ctx = null
+    if (imageTimer) clearTimeout(imageTimer)
   })
 })
 </script>
 
 <template>
   <section id="hero" class="hero" ref="heroRef">
-    <!-- 动态视频背景 -->
-    <video class="hero-video" autoplay muted loop playsinline preload="auto"
-      :src="heroVideo"></video>
+    <!-- 动态视频背景（非循环，结束后切图片10s再重播） -->
+    <video class="hero-video" :class="{ active: bgMode === 'video' }"
+      autoplay muted playsinline preload="auto"
+      :src="heroVideo" @ended="onVideoEnded"></video>
+    <!-- 图片背景（视频结束后显示10s） -->
+    <div class="hero-bg-image" :class="{ active: bgMode === 'image' }"
+      :style="{ backgroundImage: `url(${heroBgImage})` }"></div>
     <canvas class="star-canvas"></canvas>
 
     <!-- Planet tooltip -->
@@ -811,7 +843,28 @@ onMounted(() => {
   object-fit: cover;
   pointer-events: none;
   user-select: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.hero-video.active {
   opacity: 0.9;
+}
+
+/* ===== 图片背景（视频结束后切换） ===== */
+.hero-bg-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.hero-bg-image.active {
+  opacity: 1;
 }
 
 /* ===== Canvas ===== */

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import starBg from '../image/星空.jpeg'
+import heroVideo from '../image/动态主页.mp4'
 
 const visible = ref(false)
 const heroRef = ref(null)
@@ -740,8 +740,9 @@ onMounted(() => {
 
 <template>
   <section id="hero" class="hero" ref="heroRef">
-    <!-- 星空背景图层 -->
-    <div class="star-bg" :style="{ backgroundImage: `url(${starBg})` }"></div>
+    <!-- 动态视频背景 -->
+    <video class="hero-video" autoplay muted loop playsinline preload="auto"
+      :src="heroVideo"></video>
     <canvas class="star-canvas"></canvas>
 
     <!-- Planet tooltip -->
@@ -800,93 +801,17 @@ onMounted(() => {
   background: radial-gradient(ellipse 80% 60% at 50% 35%, rgba(0, 1, 8, 0.45) 0%, rgba(0, 1, 8, 0.82) 100%);
 }
 
-/* ===== 星空背景图 ===== */
-.star-bg {
+/* ===== 动态视频背景 ===== */
+.hero-video {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.85;
-  animation: star-bg-breath 6s ease-in-out infinite;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   pointer-events: none;
   user-select: none;
-}
-
-@keyframes star-bg-breath {
-  0%, 100% { opacity: 0.75; }
-  50% { opacity: 0.95; }
-}
-
-/* ===== CSS 闪烁星星叠加层 ===== */
-.star-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    /* 星1: 大亮星 */
-    radial-gradient(1.5px 1.5px at 15% 20%, rgba(255, 255, 255, 0.9) 0%, transparent 100%),
-    radial-gradient(2px 2px at 15% 20%, rgba(200, 220, 255, 0.4) 0%, transparent 100%),
-    /* 星2 */
-    radial-gradient(1.2px 1.2px at 28% 35%, rgba(255, 245, 220, 0.85) 0%, transparent 100%),
-    radial-gradient(1.8px 1.8px at 28% 35%, rgba(255, 200, 150, 0.35) 0%, transparent 100%),
-    /* 星3 */
-    radial-gradient(1.3px 1.3px at 42% 12%, rgba(220, 240, 255, 0.9) 0%, transparent 100%),
-    /* 星4 */
-    radial-gradient(1px 1px at 55% 28%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
-    /* 星5 */
-    radial-gradient(1.4px 1.4px at 68% 18%, rgba(200, 210, 255, 0.85) 0%, transparent 100%),
-    radial-gradient(2.2px 2.2px at 68% 18%, rgba(180, 200, 255, 0.3) 0%, transparent 100%),
-    /* 星6 */
-    radial-gradient(1.1px 1.1px at 78% 40%, rgba(255, 250, 235, 0.8) 0%, transparent 100%),
-    /* 星7 */
-    radial-gradient(1.3px 1.3px at 85% 22%, rgba(255, 255, 255, 0.85) 0%, transparent 100%),
-    radial-gradient(2px 2px at 85% 22%, rgba(200, 220, 255, 0.35) 0%, transparent 100%),
-    /* 星8 */
-    radial-gradient(1px 1px at 8% 45%, rgba(210, 230, 255, 0.75) 0%, transparent 100%),
-    /* 星9 */
-    radial-gradient(1.5px 1.5px at 35% 55%, rgba(255, 245, 225, 0.9) 0%, transparent 100%),
-    /* 星10 */
-    radial-gradient(1.2px 1.2px at 60% 48%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
-    /* 星11 */
-    radial-gradient(1.3px 1.3px at 90% 55%, rgba(210, 225, 255, 0.85) 0%, transparent 100%),
-    /* 星12 */
-    radial-gradient(1px 1px at 48% 62%, rgba(255, 245, 220, 0.75) 0%, transparent 100%),
-    /* 星13 */
-    radial-gradient(1.4px 1.4px at 22% 68%, rgba(255, 255, 255, 0.85) 0%, transparent 100%),
-    /* 星14 */
-    radial-gradient(1.1px 1.1px at 72% 65%, rgba(200, 230, 255, 0.8) 0%, transparent 100%);
-  opacity: 0;
-  animation: css-stars-twinkle 3s ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* 错峰闪烁 — 偶数星 */
-.star-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(1.4px 1.4px at 10% 60%, rgba(255, 255, 255, 0.85) 0%, transparent 100%),
-    radial-gradient(1.2px 1.2px at 32% 70%, rgba(210, 235, 255, 0.8) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 50% 75%, rgba(255, 245, 220, 0.9) 0%, transparent 100%),
-    radial-gradient(2.5px 2.5px at 50% 75%, rgba(200, 180, 140, 0.3) 0%, transparent 100%),
-    radial-gradient(1px 1px at 65% 72%, rgba(255, 255, 255, 0.75) 0%, transparent 100%),
-    radial-gradient(1.3px 1.3px at 82% 68%, rgba(220, 240, 255, 0.85) 0%, transparent 100%),
-    radial-gradient(1.2px 1.2px at 18% 80%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
-    radial-gradient(1.4px 1.4px at 38% 85%, rgba(210, 220, 255, 0.85) 0%, transparent 100%),
-    radial-gradient(1.1px 1.1px at 55% 82%, rgba(255, 250, 235, 0.8) 0%, transparent 100%),
-    radial-gradient(1.3px 1.3px at 75% 80%, rgba(255, 255, 255, 0.85) 0%, transparent 100%),
-    radial-gradient(1.1px 1.1px at 92% 85%, rgba(200, 230, 255, 0.75) 0%, transparent 100%);
-  opacity: 0;
-  animation: css-stars-twinkle 3s ease-in-out 1.5s infinite;
-  pointer-events: none;
-}
-
-@keyframes css-stars-twinkle {
-  0%, 55%, 100% { opacity: 0; }
-  20%, 40% { opacity: 1; }
+  opacity: 0.9;
 }
 
 /* ===== Canvas ===== */
@@ -963,7 +888,7 @@ onMounted(() => {
   text-align: center;
   padding: 0 24px;
   max-width: 720px;
-  z-index: 2;
+  z-index: 7;
   opacity: 0;
   transform: translateY(28px);
   transition: opacity 1.2s cubic-bezier(0.16,1,0.3,1),
@@ -1079,7 +1004,7 @@ onMounted(() => {
   bottom: 0; left: 0; right: 0;
   height: 250px;
   background: linear-gradient(to top, rgba(3, 4, 16, 0.75) 0%, rgba(3, 4, 16, 0.35) 50%, transparent 100%);
-  z-index: 2;
+  z-index: 7;
   pointer-events: none;
 }
 

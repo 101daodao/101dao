@@ -1,6 +1,7 @@
 <script setup>
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
+import skillsBg from '../image/通用.png'
 
 const categories = [
   {
@@ -27,6 +28,8 @@ const goHome = () => {
 
 <template>
   <section id="skills" class="skills-page page-section">
+    <!-- 页面背景 -->
+    <div class="section-bg" :style="{ backgroundImage: `url(${skillsBg})` }"></div>
     <div class="page-corner-stars"></div>
 
     <!-- 浮动粒子 -->
@@ -84,6 +87,16 @@ const goHome = () => {
   padding-top: 140px;
   min-height: 100vh;
   background: transparent;
+}
+
+.section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .skills-grid {

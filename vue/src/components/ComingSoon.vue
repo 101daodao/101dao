@@ -6,6 +6,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
+import csBg from '../image/通用.png'
 
 const props = defineProps({
   id: { type: String, required: true },
@@ -56,6 +57,8 @@ onUnmounted(() => {
 
 <template>
   <section :id="id" class="cs-page page-section">
+    <!-- 页面背景 -->
+    <div class="section-bg" :style="{ backgroundImage: `url(${csBg})` }"></div>
     <!-- 页面四角星点 -->
     <div class="page-corner-stars"></div>
 
@@ -124,6 +127,16 @@ onUnmounted(() => {
   min-height: 100vh;
   position: relative;
   background: transparent;
+}
+
+.section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 /* 漂浮星点粒子 */

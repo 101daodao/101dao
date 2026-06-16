@@ -6,6 +6,7 @@ import aiImg from '../image/ai.webp'
 import ershouImg from '../image/ershou.png'
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
+import projectsBg from '../image/通用.png'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { EffectCards } from 'swiper/modules'
 
@@ -78,6 +79,8 @@ const goHome = () => {
 
 <template>
   <section id="projects" class="projects-page page-section">
+    <!-- 页面背景 -->
+    <div class="section-bg" :style="{ backgroundImage: `url(${projectsBg})` }"></div>
     <div class="page-corner-stars"></div>
 
     <h2 class="section-title fade-up">
@@ -172,6 +175,16 @@ const goHome = () => {
   min-height: 100vh;
   overflow: hidden;
   background: transparent;
+}
+
+.section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .showcase-area {

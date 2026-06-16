@@ -1,6 +1,7 @@
 <script setup>
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
+import aboutBg from '../image/通用.png'
 
 const info = [
   { icon: 'School', label: '学校', value: '辽宁建筑职业学院' },
@@ -16,6 +17,8 @@ const goHome = () => {
 
 <template>
   <section id="about" class="about-page page-section">
+    <!-- 页面背景 -->
+    <div class="section-bg" :style="{ backgroundImage: `url(${aboutBg})` }"></div>
     <!-- 页面四角星点 -->
     <div class="page-corner-stars"></div>
 
@@ -130,6 +133,16 @@ const goHome = () => {
   padding-bottom: 80px;
   min-height: 100vh;
   background: transparent;
+}
+
+.section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .about-grid {

@@ -1,6 +1,7 @@
 <script setup>
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
+import contactBg from '../image/通用.png'
 
 const contacts = [
   { icon: 'Message', label: '邮箱', value: 'zdw060127@163.com', color: '#428cff' },
@@ -16,6 +17,8 @@ const goHome = () => {
 
 <template>
   <section id="contact" class="contact-page page-section">
+    <!-- 页面背景 -->
+    <div class="section-bg" :style="{ backgroundImage: `url(${contactBg})` }"></div>
     <div class="page-corner-stars"></div>
 
     <h2 class="section-title fade-up">
@@ -57,6 +60,16 @@ const goHome = () => {
   padding-top: 140px;
   min-height: 100vh;
   background: transparent;
+}
+
+.section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .contact-grid {

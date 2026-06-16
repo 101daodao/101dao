@@ -9,19 +9,19 @@ import Contact from './components/Contact.vue'
 import ComingSoon from './components/ComingSoon.vue'
 import FooterSec from './components/FooterSec.vue'
 import SpaceBackground from './components/SpaceBackground.vue'
-import starBg from './image/星空.jpeg'
+import commonBg from './image/通用.png'
 
 /**
- * 全站星空背景控制
- * 首页: 透明度 100%, 完整渲染 + 星空图片底纹
- * 内页: 星空图片底纹 25%~35% + canvas 星空叠加 15%
+ * 全站背景控制
+ * 首页: 透明度 100%, 完整渲染 + 通用底纹
+ * 内页: 底纹 50% + canvas 星空叠加 15%
  */
 const isHome = ref(true)
 const heroVisible = ref(true)
 
 const bgOpacity = computed(() => isHome.value ? 1 : 0.15)
 const bgReduced = computed(() => !isHome.value)
-const starBgImg = computed(() => `url(${starBg})`)
+const bgImg = computed(() => `url(${commonBg})`)
 
 /* 通过 IntersectionObserver 判断当前在首页还是内页 */
 let heroObserver = null
@@ -73,8 +73,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- 全站星空图片底纹（内页时显示，确保星空感不丢失） -->
-  <div class="global-star-bg" :class="{ 'is-inner': !isHome }" :style="{ backgroundImage: starBgImg }"></div>
+  <!-- 全站底纹（内页时显示，确保背景不丢失） -->
+  <div class="global-star-bg" :class="{ 'is-inner': !isHome }" :style="{ backgroundImage: bgImg }"></div>
 
   <!-- 全站统一星空 canvas 动态层 -->
   <SpaceBackground
@@ -99,7 +99,7 @@ onUnmounted(() => {
 </template>
 
 <style>
-/* ── 全局星空图片底纹 — 始终显示，消除所有断层 ── */
+/* ── 全局底纹 — 始终显示，消除所有断层 ── */
 .global-star-bg {
   position: fixed;
   inset: 0;

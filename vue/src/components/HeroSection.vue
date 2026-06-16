@@ -9,29 +9,61 @@ const tooltipRef = ref(null)
 let ctx = null, canvas = null, animFrame = null
 
 /* ============================================
-   Video ↔ Image loop background
+   Canvas → Image → Video 三模式背景循环
+   每段6秒，明快切换
    ============================================ */
-const bgMode = ref('video') // 'video' | 'image'
+const DURATION = 8000 // 8 秒切换
+
+const bgMode = ref('canvas') // 'canvas' | 'image' | 'video'
 let imageTimer = null
+let isCycling = false // 防止 onVideoEnded 重复触发
+
+// 平滑过渡：暗色背景 alpha 值，通过 lerp 渐变而不跳变
+let canvasBgAlpha = 0.35 // 当前暗色 alpha
+let targetBgAlpha = 0.35  // 目标 alpha（0 = 透明，0.35 = canvas暗色模式）
+
+const setTargetBgAlpha = (target) => {
+  targetBgAlpha = target
+  // 如果是从 0→0.35（进canvas模式），立即起步避免太慢
+  if (target > 0.3 && canvasBgAlpha < 0.05) {
+    canvasBgAlpha = 0.05
+  }
+}
+
+const startBGModeCycle = () => {
+  clearTimeout(imageTimer)
+  // Canvas 星空 → 图片背景
+  imageTimer = setTimeout(() => {
+    setTargetBgAlpha(0) // canvas暗色平滑淡出
+    bgMode.value = 'image'
+
+    // 图片 → 视频
+    imageTimer = setTimeout(() => {
+      bgMode.value = 'video'
+      nextTick(() => {
+        const video = heroRef.value?.querySelector('.hero-video')
+        if (video) {
+          video.currentTime = 0
+          video.play().catch(() => {})
+        }
+      })
+    }, DURATION)
+  }, DURATION)
+}
 
 const onVideoEnded = () => {
-  bgMode.value = 'image'
-  // 暂停视频并回到开头
+  // 仅在视频模式下响应 ended 事件
+  if (bgMode.value !== 'video' || isCycling) return
+  isCycling = true
+  bgMode.value = 'canvas'
+  setTargetBgAlpha(0.35) // 暗色平滑淡入
   const video = heroRef.value?.querySelector('.hero-video')
   if (video) {
     video.pause()
     video.currentTime = 0
   }
-
-  imageTimer = setTimeout(() => {
-    bgMode.value = 'video'
-    nextTick(() => {
-      const video = heroRef.value?.querySelector('.hero-video')
-      if (video) {
-        video.play()
-      }
-    })
-  }, 10000)
+  startBGModeCycle()
+  setTimeout(() => { isCycling = false }, 200)
 }
 
 /* ============================================
@@ -59,6 +91,7 @@ let hoveredPlanet = null
    ============================================ */
 let starLayers = []
 let nebulaBlobs = []
+let shootingStars = [] // image/video模式专用流星拖尾层
 
 /* Planets — all 8 are navigable */
 const planetDefs = [
@@ -75,7 +108,10 @@ const planetDefs = [
 let planets = []
 let coreParticles = []
 
-onMounted(() => { visible.value = true })
+onMounted(() => {
+  visible.value = true
+  startBGModeCycle() // 启动 canvas → image → video 循环
+})
 
 const go = (href) => {
   document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
@@ -173,6 +209,29 @@ onMounted(() => {
     }
   }
 
+  /* ---- Shooting stars for image/video mode ---- */
+  const generateShootingStars = (w, h) => {
+    shootingStars = []
+    // 30-40 条随机流星线，模拟参考图的拖尾星
+    for (let i = 0; i < 35; i++) {
+      const angle = rand(-Math.PI * 0.8, -Math.PI * 0.2) + Math.random() > 0.5 ? Math.PI : 0 // 左上或右上方向
+      const len = rand(15, 60)
+      shootingStars.push({
+        x: rand(0, w),
+        y: rand(0, h),
+        vx: Math.cos(angle) * rand(1.2, 4.5),
+        vy: Math.sin(angle) * rand(1.2, 4.5),
+        len: len,
+        width: rand(0.3, 1.2),
+        alpha: rand(0.15, 0.6),
+        life: 0,
+        maxLife: rand(80, 250), // 存活帧数
+        delay: randInt(0, 300), // 延迟启动帧
+        hue: Math.random() < 0.25 ? randInt(190, 270) : 0,
+      })
+    }
+  }
+
   /* ---- Generate core glow particles ---- */
   const generateCoreParticles = () => {
     coreParticles = []
@@ -217,10 +276,12 @@ onMounted(() => {
     canvas.style.height = h + 'px'
     generateStars(W(), H())
     generateCoreParticles()
+    generateShootingStars(W(), H())
   }
 
   generateStars(W(), H())
   generateCoreParticles()
+  generateShootingStars(W(), H())
   initPlanets()
   resize()
   window.addEventListener('resize', resize)
@@ -441,14 +502,31 @@ onMounted(() => {
     const mx = (smoothMouse.x / w - 0.5) * 2
     const my = (smoothMouse.y / h - 0.5) * 2
 
-    // ── 仅画极淡暗角，让星空底图充分透出 ──
-    const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h))
-    bgGrad.addColorStop(0, 'rgba(0, 0, 0, 0)')
-    bgGrad.addColorStop(0.6, 'rgba(0, 0, 0, 0)')
-    bgGrad.addColorStop(0.85, 'rgba(2, 2, 8, 0.25)')
-    bgGrad.addColorStop(1, 'rgba(0, 0, 4, 0.45)')
-    ctx.fillStyle = bgGrad
-    ctx.fillRect(0, 0, w, h)
+    // ── 背景模式处理 ──
+    const isDarkMode = bgMode.value === 'canvas'
+    canvasBgAlpha += (targetBgAlpha - canvasBgAlpha) * 0.14
+    if (isDarkMode && canvasBgAlpha > 0.002) {
+      // canvas模式：暗色消退层清除拖影 + 营造深空星场
+      ctx.fillStyle = `rgba(0, 0, 0, ${canvasBgAlpha.toFixed(3)})`
+      ctx.fillRect(0, 0, w, h)
+    } else if (!isDarkMode) {
+      // image/video模式：destination-out 减法消退，星空有拖尾，背景无黑底累积
+      ctx.globalCompositeOperation = 'destination-out'
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.025)'
+      ctx.fillRect(0, 0, w, h)
+      ctx.globalCompositeOperation = 'source-over'
+    }
+
+    // ── 暗角仅 canvas 模式绘制，image/video 模式不干扰背景穿透 ──
+    if (isDarkMode) {
+      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h))
+      bgGrad.addColorStop(0, 'rgba(0, 0, 0, 0)')
+      bgGrad.addColorStop(0.6, 'rgba(0, 0, 0, 0)')
+      bgGrad.addColorStop(0.85, 'rgba(2, 2, 8, 0.25)')
+      bgGrad.addColorStop(1, 'rgba(0, 0, 4, 0.45)')
+      ctx.fillStyle = bgGrad
+      ctx.fillRect(0, 0, w, h)
+    }
 
     // ── Nebula gas blobs ──
     nebulaBlobs.forEach(nb => {
@@ -540,6 +618,73 @@ onMounted(() => {
         }
       })
     })
+
+    // ── Shooting stars (image/video mode only) ──
+    if (!isDarkMode) {
+      shootingStars.forEach(ss => {
+        ss.life++
+        if (ss.life < ss.delay) return
+        if (ss.life > ss.maxLife + ss.delay) {
+          // 重置：随机新位置
+          ss.x = rand(0, w)
+          ss.y = rand(0, h)
+          ss.life = 0
+          ss.delay = randInt(60, 300)
+          return
+        }
+        const progress = (ss.life - ss.delay) / ss.maxLife
+        // 淡入-恒定-淡出
+        let fadeAlpha = ss.alpha
+        if (progress < 0.15) fadeAlpha *= progress / 0.15
+        else if (progress > 0.7) fadeAlpha *= (1 - progress) / 0.3
+
+        ss.x += ss.vx
+        ss.y += ss.vy
+
+        // 边界重置
+        if (ss.x < -100 || ss.x > w + 100 || ss.y < -100 || ss.y > h + 100) {
+          ss.x = rand(0, w); ss.y = rand(0, h)
+          ss.life = 0; ss.delay = randInt(30, 200)
+          return
+        }
+
+        // 绘制拖尾线：头部亮、尾部渐暗
+        const grad = ctx.createLinearGradient(
+          ss.x, ss.y,
+          ss.x - ss.vx * ss.len * 2, ss.y - ss.vy * ss.len * 2
+        )
+        if (ss.hue === 0) {
+          grad.addColorStop(0, `rgba(230, 240, 255, ${fadeAlpha})`)
+          grad.addColorStop(1, `rgba(220, 225, 245, 0)`)
+        } else {
+          grad.addColorStop(0, `hsla(${ss.hue}, 55%, 80%, ${fadeAlpha})`)
+          grad.addColorStop(1, `hsla(${ss.hue}, 40%, 70%, 0)`)
+        }
+        ctx.strokeStyle = grad
+        ctx.lineWidth = ss.width
+        ctx.lineCap = 'round'
+        ctx.beginPath()
+        ctx.moveTo(ss.x, ss.y)
+        ctx.lineTo(ss.x - ss.vx * ss.len * 2, ss.y - ss.vy * ss.len * 2)
+        ctx.stroke()
+
+        // 头部亮点
+        ctx.fillStyle = ss.hue === 0
+          ? `rgba(255, 255, 255, ${fadeAlpha * 0.9})`
+          : `hsla(${ss.hue}, 50%, 85%, ${fadeAlpha * 0.9})`
+        ctx.beginPath(); ctx.arc(ss.x, ss.y, ss.width * 1.5, 0, Math.PI * 2); ctx.fill()
+      })
+
+      // image/video模式额外：增强星场密度，补画一层稀疏微尘
+      for (let i = 0; i < 40; i++) {
+        const seed = i * 7919
+        const px = ((seed * 13.7) % w + t * (10 + (i % 3) * 8) * (i % 2 ? 1 : -1)) % w
+        const py = ((seed * 17.3) % h + t * (6 + (i % 4) * 3) * ((i + 1) % 2 ? 1 : -1)) % h
+        const flicker = Math.sin(t * (1.5 + i * 0.12) + seed) * 0.5 + 0.5
+        ctx.fillStyle = `rgba(200, 210, 235, ${(0.08 + flicker * 0.18).toFixed(3)})`
+        ctx.beginPath(); ctx.arc(px, py, 0.35 + (i % 5) * 0.15, 0, Math.PI * 2); ctx.fill()
+      }
+    }
 
     // ── Galaxy spiral dust ──
     ctx.save()
@@ -768,11 +913,11 @@ onMounted(() => {
 
 <template>
   <section id="hero" class="hero" ref="heroRef">
-    <!-- 动态视频背景（非循环，结束后切图片10s再重播） -->
+    <!-- 视频背景（仅video模式时播放，结束后切回） -->
     <video class="hero-video" :class="{ active: bgMode === 'video' }"
-      autoplay muted playsinline preload="auto"
+      muted playsinline preload="auto"
       :src="heroVideo" @ended="onVideoEnded"></video>
-    <!-- 图片背景（视频结束后显示10s） -->
+    <!-- 图片背景（仅image模式可见，显示10s） -->
     <div class="hero-bg-image" :class="{ active: bgMode === 'image' }"
       :style="{ backgroundImage: `url(${heroBgImage})` }"></div>
     <canvas class="star-canvas"></canvas>
@@ -844,7 +989,7 @@ onMounted(() => {
   pointer-events: none;
   user-select: none;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 0.6s ease;
 }
 .hero-video.active {
   opacity: 0.9;
@@ -861,7 +1006,7 @@ onMounted(() => {
   pointer-events: none;
   user-select: none;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 0.6s ease;
 }
 .hero-bg-image.active {
   opacity: 1;

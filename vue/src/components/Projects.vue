@@ -6,7 +6,7 @@ import aiImg from '../image/ai.webp'
 import ershouImg from '../image/ershou.png'
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
-import projectsBg from '../image/通用.png'
+import projectsBg from '../image/通用.jpg'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { EffectCards } from 'swiper/modules'
 

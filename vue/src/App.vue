@@ -9,7 +9,7 @@ import Contact from './components/Contact.vue'
 import ComingSoon from './components/ComingSoon.vue'
 import FooterSec from './components/FooterSec.vue'
 import SpaceBackground from './components/SpaceBackground.vue'
-import commonBg from './image/通用.png'
+import commonBg from './image/通用.jpg'
 
 /**
  * 全站背景控制

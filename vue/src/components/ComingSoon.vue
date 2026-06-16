@@ -6,7 +6,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import SpaceGlass from './SpaceGlass.vue'
 import PlanetMini from './PlanetMini.vue'
-import csBg from '../image/通用.png'
+import csBg from '../image/通用.jpg'
 
 const props = defineProps({
   id: { type: String, required: true },

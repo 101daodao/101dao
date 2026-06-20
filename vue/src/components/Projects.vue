@@ -33,7 +33,7 @@ const projects = [
     desc: '接入大模型 API，SSE 流式对话，AI 个性化推荐',
     tags: ['Vue3', 'Axios', 'AI API', 'Element Plus'],
     color: '#9748ff', image: aiImg,
-    link: 'https://www.zdaow.xyz/'
+    link: 'https://ai.zdaow.xyz/'
   },
   {
     title: '校园二手交易平台', subtitle: 'Vue3 校园交易',

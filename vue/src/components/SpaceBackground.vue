@@ -227,8 +227,6 @@ onUnmounted(() => {
 .space-bg-canvas {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
   z-index: 0;
   pointer-events: none;
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);

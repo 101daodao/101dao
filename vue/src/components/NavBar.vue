@@ -4,7 +4,6 @@ import { ref, onMounted, onUnmounted } from 'vue'
 const scrolled = ref(false)
 const cursorRef = ref(null)
 const capsuleRef = ref(null)
-const scrollProgress = ref(0)
 
 const links = [
   { label: '首页', href: '#hero' },
@@ -16,8 +15,6 @@ const links = [
 
 const handleScroll = () => {
   scrolled.value = window.scrollY > 50
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight
-  scrollProgress.value = docHeight > 0 ? Math.min((window.scrollY / docHeight) * 100, 100) : 0
 }
 onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
 onUnmounted(() => window.removeEventListener('scroll', handleScroll))
@@ -54,8 +51,6 @@ onMounted(() => {
 
 <template>
   <header class="navbar" :class="{ scrolled }">
-    <!-- Scroll Progress Bar -->
-    <div class="scroll-bar" :style="{ width: scrollProgress + '%' }"></div>
     <div class="nav-inner">
       <!-- Pure glass capsule, no dark bg -->
       <nav class="nav-capsule" ref="capsuleRef">
@@ -90,19 +85,6 @@ onMounted(() => {
   z-index: 999;
   padding: 24px 0;
   transition: padding 0.4s cubic-bezier(0.16,1,0.3,1);
-}
-
-/* Scroll Progress Bar */
-.scroll-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  background: var(--gradient-accent);
-  border-radius: 0 2px 2px 0;
-  transition: width 0.15s linear;
-  z-index: 1000;
-  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 /* No background on default — only subtle blur on scroll */

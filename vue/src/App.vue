@@ -18,6 +18,7 @@ import commonBg from './image/通用.jpg'
  */
 const isHome = ref(true)
 const heroVisible = ref(true)
+const isMobile = ref(false)
 
 const bgOpacity = computed(() => isHome.value ? 1 : 0.15)
 const bgReduced = computed(() => !isHome.value)
@@ -25,8 +26,15 @@ const bgImg = computed(() => `url(${commonBg})`)
 
 /* 通过 IntersectionObserver 判断当前在首页还是内页 */
 let heroObserver = null
+let mobileQuery = null
 
 onMounted(() => {
+  /* 移动端检测 */
+  mobileQuery = window.matchMedia('(max-width: 768px)')
+  isMobile.value = mobileQuery.matches
+  const onMobileChange = (e) => { isMobile.value = e.matches }
+  mobileQuery.addEventListener('change', onMobileChange)
+
   /* 入场动画观察器 */
   const observer = new IntersectionObserver(
     (entries) => {
@@ -69,6 +77,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (heroObserver) heroObserver.disconnect()
+  if (mobileQuery) mobileQuery.removeEventListener('change', () => {})
 })
 </script>
 
@@ -85,7 +94,7 @@ onUnmounted(() => {
 
   <NavBar />
   <main>
-    <HeroSection />
+    <HeroSection :is-home="isHome" :is-mobile="isMobile" />
     <AboutMe />
     <Skills />
     <Projects />

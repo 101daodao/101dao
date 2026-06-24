@@ -1,7 +1,12 @@
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import heroVideo from '../image/动态主页.mp4'
 import heroBgImage from '../image/关于我.jpg'
+
+const props = defineProps({
+  isHome: { type: Boolean, default: true },
+  isMobile: { type: Boolean, default: false },
+})
 
 const visible = ref(false)
 const heroRef = ref(null)
@@ -110,7 +115,13 @@ let coreParticles = []
 
 onMounted(() => {
   visible.value = true
-  startBGModeCycle() // 启动 canvas → image → video 循环
+  if (props.isMobile) {
+    /* 移动端：固定图片背景 + 星空特效，不循环切换，不播放视频 */
+    bgMode.value = 'image'
+    setTargetBgAlpha(0) // canvas 暗色不绘制，星空透明叠加
+  } else {
+    startBGModeCycle() // 桌面端：启动 canvas → image → video 循环
+  }
 })
 
 const go = (href) => {
@@ -134,6 +145,7 @@ onMounted(() => {
 
   /* ---- Multi-layer star generation ---- */
   const generateStars = (w, h) => {
+    const m = props.isMobile
     starLayers = [
       { // Layer 0: Far deep field
         parallax: 0.03,
@@ -152,8 +164,9 @@ onMounted(() => {
       },
     ]
 
-    // Layer 0 — 800 far tiny stars
-    for (let i = 0; i < 800; i++) {
+    // Layer 0 — 桌面800 / 移动150 远层微小星
+    const l0Count = m ? 150 : 800
+    for (let i = 0; i < l0Count; i++) {
       starLayers[0].stars.push({
         x: rand(0, w * 1.3), y: rand(0, h * 1.3),
         ox: rand(0, w * 1.3), oy: rand(0, h * 1.3),
@@ -165,8 +178,9 @@ onMounted(() => {
       })
     }
 
-    // Layer 1 — 500 mid stars
-    for (let i = 0; i < 500; i++) {
+    // Layer 1 — 桌面500 / 移动100 中层星
+    const l1Count = m ? 100 : 500
+    for (let i = 0; i < l1Count; i++) {
       starLayers[1].stars.push({
         x: rand(0, w * 1.15), y: rand(0, h * 1.15),
         ox: rand(0, w * 1.15), oy: rand(0, h * 1.15),
@@ -178,8 +192,9 @@ onMounted(() => {
       })
     }
 
-    // Layer 2 — 250 near stars (big & bright)
-    for (let i = 0; i < 250; i++) {
+    // Layer 2 — 桌面250 / 移动60 近层亮星
+    const l2Count = m ? 60 : 250
+    for (let i = 0; i < l2Count; i++) {
       starLayers[2].stars.push({
         x: rand(0, w * 1.08), y: rand(0, h * 1.08),
         ox: rand(0, w * 1.08), oy: rand(0, h * 1.08),
@@ -188,13 +203,14 @@ onMounted(() => {
         twinkleSpeed: rand(0.6, 2.0),
         twinklePhase: rand(0, Math.PI * 2),
         hue: Math.random() < 0.3 ? randInt(200, 270) : 0,
-        hasCross: Math.random() < 0.12, // 12% have cross spikes
+        hasCross: m ? false : (Math.random() < 0.12), // 移动端跳过十字星光
       })
     }
 
-    // Nebula gas blobs
+    // Nebula gas blobs — 桌面8 / 移动2
     nebulaBlobs = []
-    for (let i = 0; i < 8; i++) {
+    const nbCount = m ? 2 : 8
+    for (let i = 0; i < nbCount; i++) {
       nebulaBlobs.push({
         x: rand(w * 0.1, w * 0.9),
         y: rand(h * 0.1, h * 0.9),
@@ -212,6 +228,7 @@ onMounted(() => {
   /* ---- Shooting stars for image/video mode ---- */
   const generateShootingStars = (w, h) => {
     shootingStars = []
+    if (props.isMobile) return // 移动端不绘制流星，减少渲染开销
     // 30-40 条随机流星线，模拟参考图的拖尾星
     for (let i = 0; i < 35; i++) {
       const angle = rand(-Math.PI * 0.8, -Math.PI * 0.2) + Math.random() > 0.5 ? Math.PI : 0 // 左上或右上方向
@@ -235,7 +252,8 @@ onMounted(() => {
   /* ---- Generate core glow particles ---- */
   const generateCoreParticles = () => {
     coreParticles = []
-    for (let i = 0; i < 200; i++) {
+    const cpCount = props.isMobile ? 40 : 200
+    for (let i = 0; i < cpCount; i++) {
       const angle = rand(0, Math.PI * 2)
       const r = rand(0, 30)
       coreParticles.push({
@@ -686,7 +704,8 @@ onMounted(() => {
       }
     }
 
-    // ── Galaxy spiral dust ──
+    // ── Galaxy spiral dust ── (移动端跳过以提升性能)
+    if (!props.isMobile) {
     ctx.save()
     ctx.translate(cx, cy)
     for (let arm = 0; arm < 4; arm++) {
@@ -705,6 +724,7 @@ onMounted(() => {
       }
     }
     ctx.restore()
+    } // 移动端跳过银河旋臂
 
     // ── Orbit rings ──
     ctx.save()
@@ -713,7 +733,7 @@ onMounted(() => {
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)'
       ctx.lineWidth = 0.7
       ctx.beginPath()
-      const segments = 128
+      const segments = props.isMobile ? 48 : 128
       for (let i = 0; i <= segments; i++) {
         const a = (i / segments) * Math.PI * 2
         const ox = Math.cos(a) * p.orbit
@@ -877,6 +897,20 @@ onMounted(() => {
   }
   animFrame = requestAnimationFrame(draw)
 
+  /* 监听首页可见性：离开首屏时停止 Canvas 动画以节省性能 */
+  watch(() => props.isHome, (val) => {
+    if (val) {
+      if (!animFrame && canvas) {
+        animFrame = requestAnimationFrame(draw)
+      }
+    } else {
+      if (animFrame) {
+        cancelAnimationFrame(animFrame)
+        animFrame = null
+      }
+    }
+  })
+
   if (canvas) canvas.style.cursor = 'grab'
 
   /* ---- Color helpers ---- */
@@ -913,20 +947,20 @@ onMounted(() => {
 
 <template>
   <section id="hero" class="hero" ref="heroRef">
-    <!-- 视频背景（仅video模式时播放，结束后切回） -->
-    <video class="hero-video" :class="{ active: bgMode === 'video' }"
+    <!-- 视频背景（桌面端video模式时播放，移动端不渲染） -->
+    <video v-if="!isMobile" class="hero-video" :class="{ active: bgMode === 'video' }"
       muted playsinline preload="auto"
       :src="heroVideo" @ended="onVideoEnded"></video>
-    <!-- 图片背景（仅image模式可见，显示10s） -->
-    <div class="hero-bg-image" :class="{ active: bgMode === 'image' }"
+    <!-- 图片背景（桌面端image模式可见；移动端始终显示） -->
+    <div class="hero-bg-image" :class="{ active: bgMode === 'image' || isMobile }"
       :style="{ backgroundImage: `url(${heroBgImage})` }"></div>
     <canvas class="star-canvas"></canvas>
 
     <!-- Planet tooltip -->
     <div class="planet-tooltip" ref="tooltipRef"></div>
 
-    <!-- Zoom indicator -->
-    <div class="zoom-hint">
+    <!-- Zoom indicator（移动端隐藏） -->
+    <div v-if="!isMobile" class="zoom-hint">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
@@ -1208,11 +1242,27 @@ onMounted(() => {
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
+  .hero {
+    /* 移动端：移除径向渐变叠加，让图片背景完全透过 */
+    background: transparent;
+  }
+  .hero-bg-image {
+    /* 移动端：图片背景始终可见且无过渡延迟 */
+    opacity: 1 !important;
+    transition: none;
+  }
+  .star-canvas {
+    /* 移动端：Canvas 不拦截触摸事件，仅展示星空 */
+    pointer-events: none;
+  }
   .headline { font-size: clamp(30px, 9vw, 46px); }
   .subhead { font-size: 12px; margin-bottom: 32px; }
   .btn-glass { padding: 11px 24px; font-size: 13px; }
   .actions { gap: 12px; }
-  .zoom-hint { font-size: 10px; }
+  .bottom-fade {
+    height: 120px;
+    background: linear-gradient(to top, rgba(3, 4, 16, 0.85) 0%, rgba(3, 4, 16, 0.4) 50%, transparent 100%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
